@@ -1,0 +1,9 @@
+langchain
+langgraph
+fastapi
+uvicorn
+pydantic
+chromadb
+python-dotenv
+pytest
+pytest-asyncio

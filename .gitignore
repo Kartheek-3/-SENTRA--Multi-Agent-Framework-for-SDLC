@@ -1,0 +1,36 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+env/
+.env
+
+# Node / frontend
+node_modules/
+dist/
+*.tsbuildinfo
+
+# SEAM runtime/generated data
+.seam/
+**/.seam/
+chroma_db/
+**/chroma_db/
+generated_projects/
+**/generated_projects/
+logs/
+**/logs/
+
+# Editor/local
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Build/cache
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+coverage/
+.coverage

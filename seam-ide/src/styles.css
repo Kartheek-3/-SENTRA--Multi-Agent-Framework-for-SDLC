@@ -1,0 +1,973 @@
+:root {
+  font-family: Inter, Segoe UI, Arial, sans-serif;
+  color: #d9dee7;
+  background: #15171c;
+  scrollbar-color: #4a5364 #111419;
+  scrollbar-width: thin;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  width: 100%;
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  overflow: hidden;
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #3c4657 transparent;
+}
+
+*::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+  min-height: 36px;
+  border: 2px solid transparent;
+  border-radius: 999px;
+  background: #3c4657;
+  background-clip: content-box;
+}
+
+*:hover::-webkit-scrollbar-thumb,
+*:focus-within::-webkit-scrollbar-thumb {
+  background: #59657a;
+  background-clip: content-box;
+}
+
+*::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+@media (pointer: coarse) {
+  *::-webkit-scrollbar {
+    width: 14px;
+    height: 14px;
+  }
+}
+
+.scrollArea {
+  min-width: 0;
+  min-height: 0;
+  overflow: auto;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
+}
+
+.scrollArea:focus-visible {
+  outline: 1px solid #6f8fc9;
+  outline-offset: -1px;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+button {
+  border: 1px solid #343a46;
+  background: #242933;
+  color: #e4e8ef;
+  padding: 5px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #303746;
+}
+
+button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+input,
+textarea,
+select {
+  width: 100%;
+  border: 1px solid #343a46;
+  background: #101318;
+  color: #e4e8ef;
+  border-radius: 4px;
+  padding: 6px 8px;
+}
+
+textarea {
+  resize: vertical;
+}
+
+.appShell,
+.ideShell {
+  height: 100vh;
+}
+
+.appShell {
+  display: grid;
+  grid-template-rows: 42px minmax(0, 1fr) 34px;
+}
+
+.ideShell {
+  display: grid;
+  grid-template-rows: 44px minmax(0, 1fr);
+  overflow: hidden;
+}
+
+.topbar,
+.globalBar,
+.bottomPanel,
+.paneHeader,
+.editorToolbar,
+.tabs {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.topbar,
+.globalBar {
+  padding: 6px 10px;
+  border-bottom: 1px solid #2c313b;
+  background: #1b1f27;
+}
+
+.topbar strong,
+.globalBar strong {
+  min-width: 76px;
+}
+
+.topbar select,
+.globalBar select {
+  width: min(360px, 30vw);
+}
+
+.globalBar {
+  min-width: 0;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.globalBar > .status,
+.globalBar > .dirtyStatus {
+  margin-left: auto;
+}
+
+.layoutGrid {
+  min-height: 0;
+  min-width: 0;
+  display: grid;
+  background: #0f1217;
+  overflow: hidden;
+}
+
+.dockPane {
+  min-width: 0;
+  min-height: 0;
+  display: grid;
+  grid-template-rows: 34px minmax(0, 1fr);
+  border: 1px solid #252b34;
+  background: #111419;
+  overflow: hidden;
+}
+
+.dock-left,
+.dock-right {
+  border-top: 0;
+  border-bottom: 0;
+}
+
+.dock-center {
+  border-top: 0;
+}
+
+.dock-bottom {
+  grid-column: 3;
+  grid-row: 3;
+}
+
+.panelTabs {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  overflow-x: auto;
+  border-bottom: 1px solid #252b34;
+  background: #171b22;
+  padding: 4px;
+}
+
+.panelTabs button {
+  white-space: nowrap;
+  font-size: 12px;
+  padding: 4px 7px;
+}
+
+.panelTabs button.active {
+  background: #30425d;
+  border-color: #496389;
+}
+
+.panelTabs .tabIcon {
+  margin-left: auto;
+  color: #aeb7c5;
+}
+
+.dockBody,
+.fullscreenBody,
+.floatingBody {
+  min-height: 0;
+  min-width: 0;
+  overflow: hidden;
+  display: grid;
+}
+
+.fullscreenBody,
+.floatingBody {
+  overscroll-behavior: contain;
+}
+
+.resizeHandle {
+  background: #0f1217;
+  cursor: col-resize;
+  transition: background 120ms ease;
+}
+
+.resizeHandle.horizontal {
+  grid-column: 3;
+  grid-row: 2;
+  cursor: row-resize;
+}
+
+.resizeHandle:hover {
+  background: #496389;
+}
+
+.resizeHandle.hidden {
+  cursor: default;
+  background: #0f1217;
+}
+
+.floatingWindow,
+.fullscreenPanel {
+  position: fixed;
+  z-index: 30;
+  display: grid;
+  grid-template-rows: 36px minmax(0, 1fr);
+  border: 1px solid #3c4657;
+  background: #111419;
+  box-shadow: 0 16px 44px rgb(0 0 0 / 0.35);
+  min-width: 280px;
+  min-height: 180px;
+}
+
+.fullscreenPanel {
+  inset: 12px;
+  z-index: 50;
+}
+
+.floatingTitle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 6px 8px;
+  border-bottom: 1px solid #252b34;
+  background: #1b1f27;
+  cursor: move;
+}
+
+.unavailablePanel {
+  display: grid;
+  place-content: center;
+  gap: 8px;
+  padding: 18px;
+  color: #9da8b8;
+  text-align: center;
+}
+
+.unavailablePanel strong {
+  color: #e4e8ef;
+  font-size: 16px;
+}
+
+.inlineToggle {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+  white-space: nowrap;
+}
+
+.inlineToggle input {
+  width: auto;
+}
+
+.status,
+.dirtyStatus {
+  margin-left: auto;
+  font-size: 12px;
+}
+
+.dirtyStatus {
+  color: #f7c56b;
+}
+
+.workspace {
+  min-height: 0;
+  display: grid;
+  grid-template-columns: 260px minmax(420px, 1fr) 360px;
+}
+
+.explorer,
+.seamPanel,
+.editorPane {
+  min-height: 0;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.explorer {
+  min-width: 0;
+  background: #171b22;
+  border-right: 0;
+  display: grid;
+  grid-template-rows: auto auto auto minmax(0, 1fr);
+  padding: 8px;
+  gap: 8px;
+}
+
+.seamPanel,
+.chatPanel {
+  height: 100%;
+  min-height: 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: #171b22;
+  border: 0;
+  padding: 8px;
+  gap: 8px;
+}
+
+.dockBody > .seamPanel,
+.floatingBody > .seamPanel,
+.fullscreenBody > .seamPanel {
+  height: 100%;
+  min-height: 0;
+}
+
+.chatHeader {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.chatHeader > div:first-child {
+  display: grid;
+  gap: 2px;
+}
+
+.chatHeader span {
+  color: #9da8b8;
+  font-size: 11px;
+}
+
+.workflowTimeline {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 5px;
+  font-size: 11px;
+  flex-shrink: 0;
+}
+
+.timelineStep {
+  border: 1px solid #2c313b;
+  background: #101318;
+  border-radius: 4px;
+  padding: 5px;
+}
+
+.timelineStep.complete {
+  border-color: #3c6e54;
+  color: #a7e0bd;
+}
+
+.timelineStep.running {
+  border-color: #6b5d30;
+  color: #f7d479;
+}
+
+.timelineStep.failed,
+.timelineStep.blocked {
+  border-color: #753d46;
+  color: #ff9daa;
+}
+
+.newProjectCard {
+  display: grid;
+  gap: 7px;
+  border: 1px solid #2c313b;
+  background: #111419;
+  border-radius: 6px;
+  padding: 8px;
+  flex-shrink: 0;
+}
+
+.newProjectCard label {
+  display: grid;
+  gap: 4px;
+  font-size: 12px;
+  color: #b8c1cf;
+}
+
+.twoCol {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 7px;
+}
+
+.chatList {
+  flex: 1 1 auto;
+  min-height: 0;
+  min-width: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  display: grid;
+  align-content: start;
+  gap: 10px;
+  padding-right: 4px;
+  overscroll-behavior: contain;
+  scroll-behavior: smooth;
+  scrollbar-gutter: stable;
+}
+
+.chatList::-webkit-scrollbar-thumb {
+  background: #59657a;
+  background-clip: content-box;
+}
+
+.emptyChat {
+  display: grid;
+  gap: 6px;
+  color: #9da8b8;
+  border: 1px dashed #343a46;
+  padding: 12px;
+  border-radius: 6px;
+}
+
+.chatBubble {
+  display: grid;
+  gap: 7px;
+  border: 1px solid #2c313b;
+  border-radius: 7px;
+  padding: 9px;
+  background: #101318;
+  min-width: 0;
+  scroll-margin: 14px;
+}
+
+.chatBubble.user {
+  background: #1b2636;
+  border-color: #30425d;
+}
+
+.chatBubble.running {
+  border-color: #6b5d30;
+}
+
+.chatBubble.complete {
+  border-color: #3c6e54;
+}
+
+.chatBubble.failed,
+.chatBubble.blocked {
+  border-color: #753d46;
+}
+
+.chatBubble header,
+.chatBubble footer {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 11px;
+  color: #9da8b8;
+}
+
+.chatBubble header strong {
+  color: #e4e8ef;
+}
+
+.chatBubble pre {
+  border: 0;
+  padding: 0;
+  background: transparent;
+  font-family: inherit;
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.linkButton {
+  justify-self: start;
+  border: 0;
+  padding: 0;
+  background: transparent;
+  color: #8ab4ff;
+}
+
+.artifactCard {
+  display: grid;
+  gap: 5px;
+  border: 1px solid #343a46;
+  background: #171b22;
+  border-radius: 6px;
+  padding: 8px;
+}
+
+.artifactCard span {
+  color: #9da8b8;
+  font-size: 11px;
+}
+
+.artifactCard button {
+  justify-self: start;
+}
+
+.codePreviewCard {
+  border: 1px solid #343a46;
+  background: #0b0e13;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.codePreviewHeader {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 6px 8px;
+  border-bottom: 1px solid #2c313b;
+  color: #aeb7c5;
+  font-size: 11px;
+}
+
+.codePreviewCard pre {
+  max-height: 260px;
+  overflow: auto;
+  white-space: pre;
+  overflow-wrap: normal;
+  padding: 8px;
+  font-family: Consolas, "Courier New", monospace;
+  font-size: 11px;
+  line-height: 1.45;
+}
+
+.chatActions,
+.chatInput {
+  display: flex;
+  gap: 7px;
+  flex-shrink: 0;
+}
+
+.chatInput textarea {
+  min-height: 58px;
+}
+
+.chatInput button {
+  align-self: stretch;
+}
+
+.composer {
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+  flex: 0 0 auto;
+}
+
+.composerBox {
+  position: relative;
+  display: grid;
+  gap: 8px;
+  border: 1px solid #343a46;
+  background: #101318;
+  border-radius: 8px;
+  padding: 8px;
+}
+
+.composerBox textarea {
+  min-height: 56px;
+  max-height: 300px;
+  overflow: auto;
+  overscroll-behavior: contain;
+  resize: none;
+  border: 0;
+  padding: 0;
+  background: transparent;
+}
+
+.composerToolbar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  flex-wrap: wrap;
+}
+
+.composerToolbar button,
+.composerToolbar select {
+  width: auto;
+  min-height: 30px;
+}
+
+.composerToolbar select {
+  max-width: 130px;
+  padding: 4px 6px;
+  font-size: 12px;
+}
+
+.composerToolbar .sendButton {
+  margin-left: auto;
+}
+
+.contextChips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.contextChips button {
+  border-color: #496389;
+  background: #1b2636;
+  font-size: 12px;
+}
+
+.autocompleteMenu {
+  position: absolute;
+  left: 8px;
+  right: 8px;
+  bottom: 46px;
+  z-index: 10;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+  gap: 4px;
+  max-height: 220px;
+  overflow: auto;
+  overscroll-behavior: contain;
+  border: 1px solid #3c4657;
+  background: #171b22;
+  border-radius: 8px;
+  padding: 6px;
+  box-shadow: 0 12px 30px rgb(0 0 0 / 0.35);
+}
+
+.newActivityButton {
+  justify-self: center;
+  margin-top: -2px;
+  border-color: #496389;
+  background: #1b2636;
+  color: #b9d0ff;
+  flex-shrink: 0;
+}
+
+.autocompleteMenu button {
+  text-align: left;
+  font-size: 12px;
+}
+
+.paneHeader {
+  justify-content: space-between;
+}
+
+.compactInput {
+  height: 30px;
+}
+
+.buttonRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.tree {
+  min-height: 0;
+  min-width: 0;
+  overflow: auto;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
+  border-top: 1px solid #252b34;
+  padding-top: 4px;
+}
+
+.treeNode {
+  display: grid;
+  grid-template-columns: 14px minmax(0, 1fr);
+  gap: 4px;
+  width: max-content;
+  min-width: 100%;
+  text-align: left;
+  border: 0;
+  background: transparent;
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+.treeNode.active,
+.tabs button.active,
+.sectionList button.active {
+  background: #30425d;
+}
+
+.editorPane {
+  display: grid;
+  grid-template-rows: 35px 35px minmax(0, 1fr);
+  background: #111419;
+  min-height: 0;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.tabs {
+  overflow-x: auto;
+  overflow-y: hidden;
+  overscroll-behavior-x: contain;
+  border-bottom: 1px solid #2c313b;
+  padding: 4px;
+  scrollbar-gutter: stable;
+}
+
+.tabs button {
+  display: flex;
+  gap: 8px;
+  white-space: nowrap;
+}
+
+.editorToolbar {
+  justify-content: space-between;
+  border-bottom: 1px solid #2c313b;
+  padding: 4px 8px;
+  color: #aeb7c5;
+  font-size: 12px;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.editorToolbar span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.editorHost {
+  min-height: 0;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.cm-editor {
+  height: 100%;
+  min-height: 0;
+  min-width: 0;
+  background: #101318;
+  color: #dce2ea;
+}
+
+.cm-scroller {
+  overscroll-behavior: contain;
+}
+
+.cm-scroller {
+  font-family: Consolas, "Courier New", monospace;
+  font-size: 13px;
+}
+
+.emptyEditor {
+  display: grid;
+  place-items: center;
+  color: #8e98a8;
+}
+
+.imagePreview {
+  min-width: 0;
+  min-height: 0;
+  overflow: auto;
+  display: grid;
+  place-items: start center;
+  padding: 18px;
+  background: #0e1116;
+}
+
+.imagePreview img {
+  max-width: none;
+  border: 1px solid #343a46;
+  background: #f8fafc;
+}
+
+.sectionList {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 5px;
+}
+
+.sectionList button {
+  min-width: 0;
+  font-size: 12px;
+  text-align: left;
+}
+
+.panelBody {
+  min-height: 0;
+  min-width: 0;
+  overflow: auto;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
+  padding-right: 2px;
+}
+
+.stack {
+  display: grid;
+  gap: 8px;
+  align-content: start;
+  min-width: 0;
+}
+
+.stack label {
+  display: grid;
+  gap: 4px;
+  font-size: 12px;
+  color: #b8c1cf;
+}
+
+.metric {
+  display: grid;
+  grid-template-columns: 120px minmax(0, 1fr);
+  gap: 8px;
+  align-items: center;
+  border: 1px solid #2c313b;
+  background: #111419;
+  padding: 7px;
+  border-radius: 4px;
+  font-size: 12px;
+}
+
+.metric span {
+  color: #9da8b8;
+}
+
+.metric strong {
+  overflow-wrap: anywhere;
+}
+
+pre {
+  margin: 0;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  background: #101318;
+  border: 1px solid #2c313b;
+  padding: 8px;
+  border-radius: 4px;
+  font: 12px Consolas, "Courier New", monospace;
+  max-width: 100%;
+}
+
+.panelBody pre,
+.logPanel pre,
+.outputPanel pre {
+  overflow: auto;
+  white-space: pre;
+  overflow-wrap: normal;
+}
+
+.muted {
+  color: #8e98a8;
+}
+
+.bottomPanel {
+  padding: 6px 10px;
+  border-top: 1px solid #2c313b;
+  background: #1b1f27;
+  font-size: 12px;
+}
+
+.logPanel {
+  min-height: 0;
+  min-width: 0;
+  overflow: auto;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
+  display: grid;
+  align-content: start;
+  gap: 4px;
+  padding: 8px;
+}
+
+.outputPanel {
+  min-width: 0;
+  min-height: 0;
+  overflow: auto;
+  padding: 8px;
+}
+
+.outputPanel pre {
+  min-width: max-content;
+}
+
+.logPanel pre {
+  border-radius: 3px;
+  padding: 5px 7px;
+  white-space: pre;
+  overflow-wrap: normal;
+  overflow-x: auto;
+}
+
+.bottomPanel span {
+  color: #aeb7c5;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@media (max-width: 1050px) {
+  .globalBar {
+    gap: 5px;
+  }
+
+  .globalBar button,
+  .globalBar select {
+    font-size: 12px;
+    padding: 4px 6px;
+  }
+}
+
+@media (max-width: 760px) {
+  .ideShell {
+    grid-template-rows: auto minmax(0, 1fr);
+  }
+
+  .globalBar {
+    flex-wrap: wrap;
+    max-height: 92px;
+    overflow: auto;
+  }
+
+  .panelTabs button {
+    max-width: 120px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
