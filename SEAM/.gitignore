@@ -2,6 +2,13 @@ __pycache__/
 *.py[cod]
 *$py.class
 .env
+.env.*
+!.env.example
+*.token
+*.pem
+*.key
+*.secret
+mcp_config.local.json
 .venv
 env/
 venv/

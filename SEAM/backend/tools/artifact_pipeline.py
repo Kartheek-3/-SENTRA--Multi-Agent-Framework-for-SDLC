@@ -41,6 +41,12 @@ def write_bytes_artifact(state, relative_path: str, content: bytes, artifact_typ
     if saved != content:
         raise RuntimeError(f"Artifact readback verification failed: {normalized}")
 
+    try:
+        from backend.api.projects import projects_db
+        projects_db.setdefault(state.project_id, state)
+    except Exception:
+        pass
+
     artifact = artifact_registry.register_file(
         state.project_id,
         normalized,

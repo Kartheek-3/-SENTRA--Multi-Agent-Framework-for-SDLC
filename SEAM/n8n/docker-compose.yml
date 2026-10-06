@@ -1,0 +1,24 @@
+services:
+  n8n:
+    image: n8nio/n8n:latest
+    container_name: seam-n8n
+    restart: unless-stopped
+    ports:
+      - "5678:5678"
+    environment:
+      - N8N_HOST=${N8N_HOST:-localhost}
+      - N8N_PORT=5678
+      - N8N_PROTOCOL=${N8N_PROTOCOL:-http}
+      - N8N_ENCRYPTION_KEY=${N8N_ENCRYPTION_KEY}
+      - WEBHOOK_URL=${N8N_BASE_URL:-http://localhost:5678}
+      - SEAM_API_URL=${SEAM_API_URL:-http://127.0.0.1:8000}
+      - SEAM_CALLBACK_BASE_URL=${SEAM_CALLBACK_BASE_URL:-${SEAM_API_URL:-http://host.docker.internal:8000}}
+      - SEAM_N8N_INTEGRATION_SECRET=${SEAM_N8N_INTEGRATION_SECRET}
+      - N8N_BLOCK_ENV_ACCESS_IN_NODE=false
+      - N8N_DIAGNOSTICS_ENABLED=false
+      - N8N_VERSION_NOTIFICATIONS_ENABLED=false
+    volumes:
+      - n8n_data:/home/node/.n8n
+
+volumes:
+  n8n_data:

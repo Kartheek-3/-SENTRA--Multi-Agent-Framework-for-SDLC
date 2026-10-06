@@ -1,4 +1,5 @@
 langchain
+langchain-ollama
 langgraph
 fastapi
 uvicorn
@@ -7,3 +8,5 @@ chromadb
 python-dotenv
 pytest
 pytest-asyncio
+langchain-community
+langchain-openai

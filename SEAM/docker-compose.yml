@@ -1,0 +1,83 @@
+# SEAM Unified Docker Compose Specification
+# Architecture:
+#   - dev profile:  Lightweight local development using SQLite (default, zero extra services)
+#   - prod profile: Enterprise multi-user deployment using PostgreSQL 16 + Redis 7
+
+services:
+  # -------------------------------------------------------------
+  # Production PostgreSQL Service (Only active under 'prod' profile)
+  # -------------------------------------------------------------
+  postgres:
+    image: postgres:16-alpine
+    container_name: seam-postgres
+    restart: unless-stopped
+    profiles:
+      - prod
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-seam_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-seam_secure_password}
+      POSTGRES_DB: ${POSTGRES_DB:-seam_production}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  # -------------------------------------------------------------
+  # Production Redis Service (Only active under 'prod' profile)
+  # -------------------------------------------------------------
+  redis:
+    image: redis:7-alpine
+    container_name: seam-redis
+    restart: unless-stopped
+    profiles:
+      - prod
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  # -------------------------------------------------------------
+  # SEAM Backend (Supports both dev and prod profiles)
+  # -------------------------------------------------------------
+  seam-backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: seam-backend
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      - SEAM_DATABASE_BACKEND=${SEAM_DATABASE_BACKEND:-sqlite}
+      - SEAM_SQLITE_PATH=/app/.seam/runtime/seam.db
+      - SEAM_POSTGRESQL_URL=postgresql://${POSTGRES_USER:-seam_user}:${POSTGRES_PASSWORD:-seam_secure_password}@postgres:5432/${POSTGRES_DB:-seam_production}
+      - SEAM_REDIS_URL=redis://redis:6379/0
+      - CHROMA_PERSIST_DIRECTORY=/app/chroma_db
+      - SEAM_LOCAL_MODEL=${SEAM_LOCAL_MODEL:-ai/qwen3:4b-instruct-2507-q4_K_M}
+    volumes:
+      - seam_runtime:/app/.seam
+      - chroma_data:/app/chroma_db
+    depends_on:
+      postgres:
+        condition: service_healthy
+        required: false
+      redis:
+        condition: service_healthy
+        required: false
+
+volumes:
+  postgres_data:
+  redis_data:
+  seam_runtime:
+  chroma_data:

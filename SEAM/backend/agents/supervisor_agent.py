@@ -1,5 +1,6 @@
 from backend.models.state import ProjectState
 from backend.tools.artifact_pipeline import write_text_artifact
+from backend.evaluation.ablation import capability_enabled, mark_disabled
 
 class SupervisorAgent:
     def process(self, state: ProjectState) -> ProjectState:
@@ -40,6 +41,8 @@ class SupervisorAgent:
             t for t_id, t in state.tasks.items()
             if t.status == "completed" and not ((t.result or {}).get("qa_result") or {}).get("passed")
         ]
+        pending_repairs = [plan for plan in state.repair_plans if plan.status == "PENDING"]
+        needs_review_repairs = [plan for plan in state.repair_plans if plan.status == "NEEDS_REVIEW"]
         
         scale_obj = getattr(state.structured_requirements, "scale_assessment", None)
         project_scale = scale_obj.scale_level.value if scale_obj else "UNKNOWN"
@@ -73,6 +76,35 @@ class SupervisorAgent:
             state.current_task = next_task.task_id
             state.current_agent = "CodingAgent"
             self._write_supervisor_artifacts(state, f"Dispatching task {next_task.task_id} to CodingAgent.")
+            return state
+
+        if pending_repairs:
+            if not capability_enabled(state, "autonomous_repair"):
+                mark_disabled(state, "autonomous_repair", "SupervisorAgent", "Automatic repair routing skipped by experiment configuration.")
+                state.workflow_status = "failed"
+                state.current_agent = "END"
+                self._write_supervisor_artifacts(state, "Autonomous repair disabled; defect evidence remains for evaluation.")
+                return state
+            if state.retry_count >= state.max_repair_iterations:
+                state.workflow_status = "failed"
+                state.current_agent = "END"
+                self._write_supervisor_artifacts(state, "Repair iteration limit reached; workflow failed.")
+                return state
+            repair = pending_repairs[0]
+            repair.status = "IN_PROGRESS"
+            state.retry_count += 1
+            repair_task = failed_tasks[0] if failed_tasks else next(iter(state.tasks.values()), None)
+            if repair_task:
+                repair_task.status = "in_progress"
+                state.current_task = repair_task.task_id
+            state.current_agent = "CodingAgent"
+            self._write_supervisor_artifacts(state, f"Routing repair plan {repair.repair_id} to CodingAgent.")
+            return state
+
+        if needs_review_repairs:
+            state.workflow_status = "failed"
+            state.current_agent = "END"
+            self._write_supervisor_artifacts(state, "Repair needs review because defect evidence is ambiguous.")
             return state
             
         if failed_tasks:

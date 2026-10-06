@@ -93,8 +93,10 @@ class EventBus:
                 agent_manager.set_status(agent.agent_id, AgentStatus.RUNNING, "Running workflow node")
             elif event_type == "AGENT_COMPLETED" and agent:
                 agent_manager.set_status(agent.agent_id, AgentStatus.COMPLETED, "Completed workflow node")
-            elif event_type == "WORKFLOW_FAILED" and agent:
+            elif event_type in {"AGENT_FAILED", "AGENT_TIMEOUT", "WORKFLOW_FAILED"} and agent:
                 agent_manager.set_status(agent.agent_id, AgentStatus.FAILED, "Workflow failed")
+            elif event_type == "AGENT_CANCELLED" and agent:
+                agent_manager.set_status(agent.agent_id, AgentStatus.CANCELLED, "Agent cancelled")
 
             if task_id:
                 if event_type == "TASK_STARTED":

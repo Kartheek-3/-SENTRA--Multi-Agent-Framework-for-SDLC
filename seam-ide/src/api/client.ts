@@ -57,7 +57,20 @@ export const seamApi = {
     return request<{ status: string; service: string }>('/health');
   },
   systemHealth() {
-    return request<{ backend: string; qwen: string; rag: string; github: string }>('/api/system/health');
+    return request<{ backend: string; qwen: string; rag: string; github: string; figma?: string }>('/api/system/health');
+  },
+  n8nStatus() {
+    return request<any>('/api/integrations/n8n/status');
+  },
+  experiments() {
+    return request<any>('/api/experiments');
+  },
+  experimentScenarios() {
+    return request<any>('/api/experiments/scenarios');
+  },
+  events(projectId?: string) {
+    const query = projectId ? `?project_id=${encodeURIComponent(projectId)}` : '';
+    return request<{ events: any[] }>(`/events${query}`);
   },
   models() {
     return request<any>('/api/system/models');

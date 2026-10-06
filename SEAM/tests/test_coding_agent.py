@@ -5,7 +5,7 @@ from unittest.mock import Mock, patch
 from backend.models.state import ProjectState
 from backend.models.planning import Task, ProjectPlan, SystemDesign
 from backend.agents.coding_agent import CodingAgent
-from langchain_community.chat_models.fake import FakeListChatModel
+from langchain_core.language_models.fake_chat_models import FakeListChatModel
 from backend.utils import slugify
 
 class MockModelRouter:

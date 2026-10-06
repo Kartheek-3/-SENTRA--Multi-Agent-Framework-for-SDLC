@@ -1,0 +1,135 @@
+{
+  "timestamp": "2026-10-06T00:44:00+05:30",
+  "version": "v1.0.0",
+  "checkpoint_commit": "68571143b4db3c2f8881b505a4c3948994bac32a",
+  "branch": "feature/final-hardening",
+  "system_overall_status": "PASS_WITH_WARNINGS",
+  "hardware": {
+    "cpu": "13th Gen Intel(R) Core(TM) i7-13620H (10 cores, 16 logical processors)",
+    "ram_total_gb": 15.64,
+    "ram_free_gb": 7.62,
+    "gpu": "Intel(R) UHD Graphics (Integrated, 2048 MB shared memory)",
+    "cuda_available": false,
+    "disk_free_gb": 111.15,
+    "os": "Microsoft Windows 11 Home Single Language (10.0.26100)"
+  },
+  "subsystems": {
+    "backend": {
+      "status": "PASS",
+      "framework": "FastAPI + Uvicorn",
+      "port": 8000,
+      "base_url": "http://127.0.0.1:8000",
+      "routers_registered": 16,
+      "routes_count": 68,
+      "health_endpoint": "http://127.0.0.1:8000/health",
+      "evidence": "Uvicorn running on http://127.0.0.1:8000, GET /health returned 200 {'status': 'ok', 'service': 'SEAM'}"
+    },
+    "frontend": {
+      "status": "PASS",
+      "framework": "React 18 + TypeScript + Vite 5 + CodeMirror 6 + Tauri v2",
+      "build_status": "PASS",
+      "build_tool": "tsc -b && vite build",
+      "build_duration_sec": 5.45,
+      "errors": 0,
+      "dev_server": "http://127.0.0.1:5173",
+      "evidence": "seam-ide built to dist/ in 5.45s with 0 errors. All CodeMirror, React Flow, and layout modules compiled cleanly."
+    },
+    "six_canonical_agents": {
+      "status": "PASS",
+      "agents": {
+        "AnalysisAgent": { "executable": true, "max_risk": "READ_ONLY", "input_contract": "ProjectState", "output_contract": "AnalysisResult" },
+        "PlanningAgent": { "executable": true, "max_risk": "LOW", "input_contract": "AnalysisResult", "output_contract": "ProjectPlan" },
+        "SupervisorAgent": { "executable": true, "max_risk": "READ_ONLY", "input_contract": "ProjectState", "output_contract": "ProjectState" },
+        "CodingAgent": { "executable": true, "max_risk": "MEDIUM", "input_contract": "Task", "output_contract": "TaskResult" },
+        "QAAgent": { "executable": true, "max_risk": "MEDIUM", "input_contract": "TaskResult", "output_contract": "QAResult" },
+        "DeliveryAgent": { "executable": true, "max_risk": "MEDIUM", "input_contract": "ProjectPlan", "output_contract": "DeliveryResult" }
+      },
+      "orchestration": "LangGraph state machine with conditional rework edges, retries, and state persistence"
+    },
+    "tool_ecosystem": {
+      "status": "PASS",
+      "registered_native_tools": 39,
+      "permission_engine": "ACTIVE",
+      "path_traversal_protection": "ACTIVE",
+      "secret_redaction": "ACTIVE",
+      "evidence": "Default registry registers 39 verified native tools with risk levels (READ_ONLY to MEDIUM). 9 permission and schema tests passed."
+    },
+    "rag_chromadb": {
+      "status": "PASS",
+      "mode": "REAL",
+      "collection_name": "seam_knowledge",
+      "documents_on_disk": 48,
+      "chunks_indexed": 192,
+      "embedding_model": "BAAI/bge-small-en-v1.5 / DeterministicHashFallback",
+      "evidence": "GET /rag/status returned HTTP 200 with 48 documents, 192 chunks indexed, real mode verified."
+    },
+    "model_router": {
+      "status": "PASS",
+      "providers_supported": ["docker", "ollama", "cloud"],
+      "active_provider": "ollama",
+      "docker_model_runner_base_url": "http://localhost:12434",
+      "docker_model_runner_available": true,
+      "docker_model_runner_version": "v1.2.8",
+      "ollama_base_url": "http://localhost:11434",
+      "ollama_available": true,
+      "ollama_version": "0.35.1",
+      "fallback_event_emission": "ACTIVE",
+      "execution_metadata_tracking": "ACTIVE",
+      "evidence": "ModelRouter connects to Docker Model Runner v1.2.8 (port 12434) and Ollama v0.35.1 (port 11434). Fallback emits MODEL_FALLBACK_TRIGGERED event."
+    },
+    "docker_model_runner": {
+      "status": "PASS_WITH_WARNINGS",
+      "engine_version": "Docker Desktop 29.8.2 / Server v1.2.8",
+      "port": 12434,
+      "health_endpoints": {
+        "/version": "HTTP 200 {'version': 'v1.2.8'}",
+        "/v1/models": "HTTP 200 {'object': 'list', 'data': []}",
+        "/v1/chat/completions": "HTTP 404 Model Not Found (live request parsing verified)"
+      },
+      "limitation": "Port 12434 is owned by Docker Desktop native daemon (PID 18348). Running standalone container on 12434 creates port conflict; standalone container should map to 12435 if invoked separately. Host lacks CUDA GPU so inference runs on CPU fallback."
+    },
+    "ollama": {
+      "status": "PASS",
+      "version": "0.35.1",
+      "process_id": 2440,
+      "port": 11434,
+      "base_url": "http://localhost:11434",
+      "health_endpoint": "HTTP 200 {'version': '0.35.1'}",
+      "installed_models": ["qwen2.5-coder:1.5b"],
+      "live_inference_tested": true,
+      "inference_latency_sec": 6.6,
+      "eval_tokens": 103,
+      "tokens_per_sec": 28.3,
+      "evidence": "Ollama service actively responding on 127.0.0.1:11434. Successfully pulled and executed live inference with qwen2.5-coder:1.5b (103 tokens generated in 3.64s eval, 28.3 tok/s)."
+    },
+    "n8n": {
+      "status": "PASS_WITH_WARNINGS",
+      "workflows_defined": 11,
+      "workflows_json_valid": 11,
+      "integration_tests_passing": 17,
+      "live_service": "NOT_CONFIGURED",
+      "service_port": 5678,
+      "limitation": "n8n daemon is not running locally on port 5678. Workflows and integration tests pass with mock/offline handling."
+    },
+    "github_intelligence": {
+      "status": "PASS_WITH_WARNINGS",
+      "service_type": "Capability / Service (Not an agent)",
+      "token_configured": false,
+      "status_reported": "token_missing",
+      "features": ["Repository registry", "freshness detection", "SHA tracking", "HMAC webhook", "stale context pruning"],
+      "evidence": "All 10 GitHub tests pass with mock fixtures; live GitHub API requires GITHUB_TOKEN."
+    },
+    "security": {
+      "status": "PASS",
+      "path_traversal_blocked": true,
+      "sensitive_files_protected": [".env", ".env.*", "private keys"],
+      "secret_redaction": "Automatic regex + key-name redaction on stdout, stderr, and metadata",
+      "agent_risk_isolation": "Strictly enforced via AGENT_MAX_RISK in PermissionEngine"
+    },
+    "autonomous_repair": {
+      "status": "PASS",
+      "lifecycle": "QA failure -> RepairPlan -> SupervisorAgent -> CodingAgent targeted fix -> regression test -> RESOLVED",
+      "evidence": "test_autonomous_defect_repair.py passed: 3 test cases validating defect localization, repair plan execution, and regression verification."
+    }
+  }
+}

@@ -27,7 +27,32 @@ def create_workflow():
             performance_recorder.record("agent_started", project_id=state.project_id, agent=agent_name)
             span_start = __import__("time").perf_counter()
             previous_error_count = len(state.errors)
-            new_state = func(state)
+            try:
+                new_state = func(state)
+            except TimeoutError as exc:
+                state.workflow_status = "failed"
+                state.errors.append(f"{agent_name} timed out: {exc}")
+                performance_recorder.record(
+                    "agent_timeout",
+                    project_id=state.project_id,
+                    agent=agent_name,
+                    duration_seconds=__import__("time").perf_counter() - span_start,
+                    error=str(exc),
+                )
+                event_bus.emit_sync("AGENT_TIMEOUT", {"project_id": state.project_id, "agent": agent_name, "error": str(exc)})
+                raise
+            except Exception as exc:
+                state.workflow_status = "failed"
+                state.errors.append(f"{agent_name} failed: {exc}")
+                performance_recorder.record(
+                    "agent_failed",
+                    project_id=state.project_id,
+                    agent=agent_name,
+                    duration_seconds=__import__("time").perf_counter() - span_start,
+                    errors=[str(exc)],
+                )
+                event_bus.emit_sync("AGENT_FAILED", {"project_id": state.project_id, "agent": agent_name, "errors": [str(exc)]})
+                raise
             try:
                 from backend.api.projects import projects_db
                 projects_db[new_state.project_id] = new_state

@@ -8,6 +8,7 @@ from backend.models.state import ProjectState
 from backend.models.coding import CodeGenerationResult
 from backend.events import event_bus
 from backend.performance import estimate_tokens, timed_call, timed_llm_call
+from backend.agents.model_compat import active_model_name, get_model_compat
 
 CODING_PROMPT = """You are an expert Software Engineer executing a coding task for an autonomous framework.
 Your job is to generate the physical source code files required to fulfill the assigned task.
@@ -23,11 +24,26 @@ Project Scale: {project_scale}
 Project Architecture & Technology Stack:
 {system_design}
 
+Frontend Architecture Plan:
+{frontend_architecture_plan}
+
+Full-Stack Contract Profile:
+{full_stack_contract}
+
+Active Repair Plans:
+{repair_plans}
+
 QA Feedback & Prior Findings:
 {qa_feedback}
 
 GitHub Reference Context:
 {github_context}
+
+RAG Context (Organizational Memory):
+{rag_context}
+
+Domain-Aware Context:
+{domain_context}
 
 Existing Project Files:
 {existing_files}
@@ -39,8 +55,11 @@ CRITICAL RULES:
 4. If this task touches APIs, follow the exact provided API Endpoints schema.
 5. Path rule: all file paths must be relative to the root of the generated project.
 6. File Collision Protection: If a file already exists in Existing Project Files, you MUST preserve compatible existing functionality. Never blindly overwrite. Integrate your changes with existing code.
-7. Return exactly matching the provided JSON schema.
-8. IMPORTANT: You must output STRICT, valid JSON. Do NOT use Python triple-quotes (\"\"\") for strings inside the JSON. Use standard JSON escaping.
+7. If Frontend Architecture Plan is present, follow its framework, routes, pages, components, services, API mappings, file plan, and implementation order. Do NOT invent a conflicting frontend architecture.
+8. If Full-Stack Contract Profile is present, align frontend service calls, backend routes, request/response schemas, and database fields to it. Do NOT knowingly introduce a contract mismatch that is already identified.
+9. If Active Repair Plans are present, make the smallest targeted repair for the affected files/endpoints/components. Do NOT redesign unrelated parts of the project.
+10. Return exactly matching the provided JSON schema.
+11. IMPORTANT: You must output STRICT, valid JSON. Do NOT use Python triple-quotes (\"\"\") for strings inside the JSON. Use standard JSON escaping.
 
 {format_instructions}
 """
@@ -90,13 +109,17 @@ class CodingAgent:
         # 2. Extract Context
         reqs = "\n".join(task.related_requirements) if task.related_requirements else "None explicitly assigned."
         sys_design = state.project_plan.system_design.model_dump_json(indent=2) if (state.project_plan and state.project_plan.system_design) else "{}"
+        frontend_architecture_plan = state.frontend_architecture_plan.model_dump_json(indent=2) if state.frontend_architecture_plan else "{}"
+        full_stack_contract = state.full_stack_contract.model_dump_json(indent=2) if state.full_stack_contract else "{}"
+        active_repair_plans = [plan for plan in state.repair_plans if plan.status in {"PENDING", "IN_PROGRESS"}]
+        repair_plans = "[" + ",".join(plan.model_dump_json() for plan in active_repair_plans) + "]" if active_repair_plans else "[]"
         qa_feedback = "\n".join(state.qa_feedback) if hasattr(state, "qa_feedback") and state.qa_feedback else "No prior QA feedback."
         github_context = state.github_findings.get("context", "No external GitHub context available.") if state.github_findings else "No external GitHub context available."
         scale_obj = getattr(state.structured_requirements, "scale_assessment", None)
         project_scale = scale_obj.scale_level.value if scale_obj else "UNKNOWN"
         
         format_instructions = self.parser.get_format_instructions()
-        llm = self.model_router.get_model("coding")
+        llm = get_model_compat(self.model_router, "coding")
         
         project_dir = os.path.join("generated_projects", state.project_name)
         existing_files = self._get_existing_files_context(project_dir)
@@ -110,15 +133,26 @@ class CodingAgent:
         while attempt <= MAX_CODING_ATTEMPTS:
             try:
                 if attempt == 1:
-                    from backend.knowledge.knowledge_service import KnowledgeService
-                    ks = KnowledgeService()
-                    rag_context = timed_call(
-                        "rag_retrieval",
-                        lambda: ks.retrieve_for_agent("CodingAgent", task.description),
-                        project_id=state.project_id,
-                        agent=agent_name,
+                    from backend.tools.agent_tools import run_agent_tool
+                    rag_result = run_agent_tool(
+                        state,
+                        agent_name,
+                        "rag_search",
+                        {"query": task.description, "domain": state.domain or "general", "top_k": 5},
                         task_id=task_id,
                     )
+                    rag_context = str(rag_result.structured_data.get("results", [])) if rag_result.success else "No relevant organizational knowledge found."
+                    from backend.knowledge.domain_intelligence import DomainIntelligenceService
+                    from backend.evaluation.ablation import capability_enabled, mark_disabled
+                    domain_service = DomainIntelligenceService()
+                    if capability_enabled(state, "domain_rag") and not state.domain_context:
+                        if state.domain_identification or state.structured_requirements:
+                            domain_service.retrieve_context(state, current_task=task.description)
+                    if capability_enabled(state, "domain_rag"):
+                        domain_context = domain_service.format_for_prompt(state.domain_context)
+                    else:
+                        mark_disabled(state, "domain_rag", agent_name, "Coding domain-aware context injection skipped by experiment configuration.")
+                        domain_context = "Domain-aware context disabled by experiment configuration."
 
                     prompt = ChatPromptTemplate.from_template(CODING_PROMPT)
                     chain = prompt | llm
@@ -129,8 +163,12 @@ class CodingAgent:
                         "project_scale": project_scale,
                         "rag_context": rag_context,
                         "system_design": sys_design,
+                        "frontend_architecture_plan": frontend_architecture_plan,
+                        "full_stack_contract": full_stack_contract,
+                        "repair_plans": repair_plans,
                         "qa_feedback": qa_feedback,
                         "github_context": github_context,
+                        "domain_context": domain_context,
                         "existing_files": existing_files,
                         "format_instructions": format_instructions
                     }
@@ -139,7 +177,7 @@ class CodingAgent:
                         project_id=state.project_id,
                         agent=agent_name,
                         task_id=task_id,
-                        model=self.model_router.active_models.get("coding", {}).get("actual"),
+                        model=active_model_name(self.model_router, "coding"),
                         input_token_estimate=estimate_tokens(inputs),
                         timeout_seconds=getattr(llm, "timeout", None),
                         retry_count=attempt - 1,
@@ -158,7 +196,7 @@ class CodingAgent:
                         project_id=state.project_id,
                         agent=agent_name,
                         task_id=task_id,
-                        model=self.model_router.active_models.get("coding", {}).get("actual"),
+                        model=active_model_name(self.model_router, "coding"),
                         input_token_estimate=estimate_tokens(inputs),
                         timeout_seconds=getattr(llm, "timeout", None),
                         retry_count=attempt - 1,
@@ -197,6 +235,8 @@ class CodingAgent:
         project_dir = os.path.join("generated_projects", state.project_name)
         
         try:
+            from backend.tools.agent_tools import run_agent_tool
+            run_agent_tool(state, agent_name, "file_search", {"pattern": "", "root": "."}, task_id=task_id)
             for file_obj in result_obj.files:
                 # Resolve absolute path carefully
                 full_path = os.path.abspath(os.path.join(project_dir, file_obj.path))
@@ -236,9 +276,15 @@ class CodingAgent:
                     # We log that we are modifying rather than blindly creating.
                     self._log_error(state, agent_name, f"Modifying existing file: {file_obj.path}", start_time, attempts=attempt)
                 
-                # Write file
-                with open(full_path, "w", encoding="utf-8") as f:
-                    f.write(file_obj.content)
+                write_result = run_agent_tool(
+                    state,
+                    agent_name,
+                    "file_write",
+                    {"path": file_obj.path, "content": file_obj.content},
+                    task_id=task_id,
+                )
+                if not write_result.success:
+                    raise ValueError(write_result.error.message if write_result.error else f"file_write failed for {file_obj.path}")
 
                 event_bus.emit_sync("FILE_UPDATED" if file_exists else "FILE_GENERATED", {
                     "project_id": state.project_id,
@@ -277,6 +323,16 @@ class CodingAgent:
             if task_id not in state.failed_tasks:
                 state.failed_tasks.append(task_id)
             return state
+        try:
+            run_agent_tool(state, agent_name, "git_status", {}, task_id=task_id)
+            diff_result = run_agent_tool(state, agent_name, "git_diff", {}, task_id=task_id)
+            run_agent_tool(state, agent_name, "git_add", {"paths": ["."],}, task_id=task_id)
+            run_agent_tool(state, agent_name, "git_commit", {"message": f"Complete {task_id}"}, task_id=task_id)
+        except Exception as exc:
+            state.errors.append(f"Git inspection tool warning for {task_id}: {exc}")
+            diff_result = None
+        self._record_repair_result(state, task_id, result_obj, diff_result)
+        self._run_frontend_coding_checks(state, task_id, project_dir)
 
         # 6. Success State Update
         task.status = "completed"
@@ -284,6 +340,13 @@ class CodingAgent:
         task.result = result_obj.model_dump()
         if task_id not in state.completed_tasks:
             state.completed_tasks.append(task_id)
+        try:
+            from backend.evaluation.ablation import capability_enabled
+            if capability_enabled(state, "domain_rag"):
+                from backend.knowledge.domain_intelligence import DomainIntelligenceService
+                DomainIntelligenceService().persist_traceability(state, agent_name, f"Coding task {task_id} received domain context.")
+        except Exception as exc:
+            state.errors.append(f"Domain traceability update failed for coding task {task_id}: {exc}")
             
         history_record = {
             "agent": agent_name,
@@ -298,6 +361,80 @@ class CodingAgent:
             
         state.execution_history.append(history_record)
         return state
+
+    def _record_repair_result(self, state: ProjectState, task_id: str, result_obj, diff_result) -> None:
+        from backend.events import event_bus
+        from backend.models.contracts import RepairResult
+
+        active = [plan for plan in state.repair_plans if plan.status in {"PENDING", "IN_PROGRESS"}]
+        if not active:
+            return
+        modified_files = [file_obj.path for file_obj in result_obj.files]
+        diff_summary = ""
+        if diff_result:
+            diff_summary = (diff_result.stdout or diff_result.stderr or "")[-2000:]
+        for plan in active:
+            event_bus.emit_sync("REPAIR_STARTED", {
+                "project_id": state.project_id,
+                "agent": "CodingAgent",
+                "task_id": task_id,
+                "repair_id": plan.repair_id,
+                "summary": f"Repair started: {plan.repair_id}.",
+            })
+            affected = set(plan.affected_files or [])
+            touched = set(modified_files)
+            safe_scope = not affected or bool(affected & touched)
+            status = "SUCCESS" if safe_scope else "NEEDS_REVIEW"
+            plan.status = "IMPLEMENTED" if status == "SUCCESS" else "NEEDS_REVIEW"
+            repair_result = RepairResult(
+                repair_id=plan.repair_id,
+                status=status,
+                modified_files=modified_files,
+                diff_summary=diff_summary,
+                defect_addressed=status == "SUCCESS",
+                remaining_issues=[] if status == "SUCCESS" else ["Repair did not touch the affected file from the repair plan."],
+                verification_required=[plan.verification_strategy],
+            )
+            state.repair_results.append(repair_result)
+            event_bus.emit_sync("REPAIR_COMPLETED" if status == "SUCCESS" else "REPAIR_FAILED", {
+                "project_id": state.project_id,
+                "agent": "CodingAgent",
+                "task_id": task_id,
+                "repair_id": plan.repair_id,
+                "status": status,
+                "summary": f"Repair {status}: {plan.repair_id}.",
+            })
+
+    def _run_frontend_coding_checks(self, state: ProjectState, task_id: str, project_dir: str) -> None:
+        package_path = os.path.join(project_dir, "package.json")
+        if not os.path.exists(package_path):
+            return
+        from backend.tools.agent_tools import run_agent_tool
+
+        detection = run_agent_tool(state, "CodingAgent", "detect_frontend_capabilities", {"project_root": "."}, task_id=task_id)
+        if detection.success:
+            state.frontend_capabilities = detection.structured_data
+        profile = state.frontend_capabilities or {}
+        checks = []
+        planned_tools = []
+        if profile.get("typecheck_available"):
+            planned_tools.append("typecheck_runner")
+        if profile.get("lint_available"):
+            planned_tools.append("lint_runner")
+        if profile.get("build_available"):
+            planned_tools.append("build_runner")
+        for tool_name in planned_tools:
+            result = run_agent_tool(state, "CodingAgent", tool_name, {"project_root": "."}, task_id=task_id)
+            checks.append({
+                "tool": tool_name,
+                "success": result.success,
+                "status": result.structured_data.get("status", "SUCCESS" if result.success else "FAILED"),
+                "error": result.error.message if result.error else result.stderr[-500:],
+            })
+        state.frontend_execution.setdefault(task_id, {})
+        state.frontend_execution[task_id]["capability_profile"] = profile
+        state.frontend_execution[task_id]["coding_checks"] = checks
+        state.frontend_execution[task_id]["package_detected"] = True
 
     def _log_error(self, state, agent_name, error_msg, start_time, attempts=1):
         state.errors.append(error_msg)

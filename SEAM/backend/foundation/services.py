@@ -33,10 +33,36 @@ class EventStore:
             sequence_number=sequence_number,
         )
         self.table.upsert(stored)
+        try:
+            from backend.database import db_engine
+            db_engine.append_event(event)
+        except Exception:
+            pass
         return stored
 
     def list(self, project_id: Optional[str] = None, conversation_id: Optional[str] = None, since: Optional[int] = None) -> List[StoredEvent]:
         events = self.table.list()
+        if not events:
+            try:
+                from backend.database import db_engine
+                db_rows = db_engine.list_events(project_id=project_id, since_seq=since)
+                if db_rows:
+                    rehydrated = []
+                    for idx, r in enumerate(db_rows, start=1):
+                        rehydrated.append(StoredEvent(
+                            event_id=r.get("event_id", f"evt_{idx}"),
+                            timestamp=r.get("timestamp", ""),
+                            project_id=r.get("project_id"),
+                            conversation_id=r.get("conversation_id"),
+                            task_id=r.get("task_id"),
+                            agent_id=r.get("agent_id"),
+                            event_type=r.get("event", r.get("event_type", "UNKNOWN")),
+                            payload=r,
+                            sequence_number=r.get("sequence_number", idx),
+                        ))
+                    return sorted(rehydrated, key=lambda event: event.sequence_number)
+            except Exception:
+                pass
         if project_id:
             events = [event for event in events if event.project_id == project_id]
         if conversation_id:
@@ -105,13 +131,60 @@ class ArtifactRegistry:
         self.table = JsonTable(runtime_dir / "artifacts.json", ArtifactRecord, "artifact_id")
 
     def create(self, artifact: ArtifactRecord) -> ArtifactRecord:
-        return self.table.upsert(artifact)
+        res = self.table.upsert(artifact)
+        try:
+            from backend.database import db_engine
+            db_engine.save_artifact(
+                artifact_id=artifact.artifact_id,
+                project_id=artifact.project_id,
+                path=artifact.path,
+                artifact_type=artifact.type,
+                status=artifact.status,
+                metadata_dict=artifact.metadata or {}
+            )
+        except Exception:
+            pass
+        return res
 
     def list(self, project_id: Optional[str] = None) -> List[ArtifactRecord]:
-        return self.table.filter(project_id=project_id) if project_id else self.table.list()
+        items = self.table.filter(project_id=project_id) if project_id else self.table.list()
+        if not items:
+            try:
+                from backend.database import db_engine
+                db_items = db_engine.list_artifacts(project_id=project_id)
+                if db_items:
+                    return [ArtifactRecord(
+                        artifact_id=it["artifact_id"],
+                        project_id=it["project_id"],
+                        title=it.get("metadata", {}).get("title") or it.get("path") or it["artifact_id"],
+                        path=it["path"],
+                        type=it["type"],
+                        status=it["status"],
+                        metadata=it.get("metadata", {}),
+                    ) for it in db_items]
+            except Exception:
+                pass
+        return items
 
     def get(self, artifact_id: str) -> Optional[ArtifactRecord]:
-        return self.table.get(artifact_id)
+        record = self.table.get(artifact_id)
+        if not record:
+            try:
+                from backend.database import db_engine
+                stored = db_engine.get_artifact(artifact_id)
+                if stored:
+                    return ArtifactRecord(
+                        artifact_id=stored["artifact_id"],
+                        project_id=stored["project_id"],
+                        title=stored.get("metadata", {}).get("title") or stored.get("path") or stored["artifact_id"],
+                        path=stored["path"],
+                        type=stored["type"],
+                        status=stored["status"],
+                        metadata=stored.get("metadata", {}),
+                    )
+            except Exception:
+                pass
+        return record
 
     def set_status(self, artifact_id: str, status: ArtifactStatus) -> Optional[ArtifactRecord]:
         def update(artifact: ArtifactRecord) -> ArtifactRecord:
@@ -119,7 +192,21 @@ class ArtifactRegistry:
             artifact.updated_at = utc_now()
             return artifact
 
-        return self.table.update(artifact_id, update)
+        updated = self.table.update(artifact_id, update)
+        if updated:
+            try:
+                from backend.database import db_engine
+                db_engine.save_artifact(
+                    artifact_id=updated.artifact_id,
+                    project_id=updated.project_id,
+                    path=updated.path,
+                    artifact_type=updated.type,
+                    status=updated.status,
+                    metadata_dict=updated.metadata or {}
+                )
+            except Exception:
+                pass
+        return updated
 
     def register_file(self, project_id: str, path: str, artifact_type: str = "CODE", title: Optional[str] = None, **metadata: Any) -> ArtifactRecord:
         from backend.api.projects import projects_db

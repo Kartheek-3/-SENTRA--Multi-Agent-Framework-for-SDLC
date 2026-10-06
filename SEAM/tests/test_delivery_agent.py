@@ -3,6 +3,7 @@ import os
 import shutil
 import zipfile
 import json
+import warnings
 from backend.models.state import ProjectState
 from backend.models.planning import Task, ProjectPlan, SystemDesign, ArchitectureComponent
 from backend.models.analysis import AnalysisResult
@@ -100,3 +101,27 @@ def test_delivery_agent_success():
     with zipfile.ZipFile(os.path.join(proj_dir, "delivery", "project_package.zip"), 'r') as z:
         assert "README.md" in z.namelist()
         assert "backend/main.py" in [p.replace('\\', '/') for p in z.namelist()]
+
+def test_delivery_agent_zip_no_duplicate_readme_warning():
+    state = _mock_project_state_delivery()
+    proj_dir = os.path.join("generated_projects", slugify("Delivery Test"))
+    # Pre-create a README.md to simulate an existing readme before delivery run
+    with open(os.path.join(proj_dir, "README.md"), "w", encoding="utf-8") as f:
+        f.write("# Existing Readme\n")
+        
+    agent = DeliveryAgent()
+    with warnings.catch_warnings(record=True) as recorded_warnings:
+        warnings.simplefilter("always")
+        new_state = agent.process(state)
+        
+    # Verify no UserWarning for duplicate zip name was emitted
+    zip_warnings = [w for w in recorded_warnings if "Duplicate name" in str(w.message)]
+    assert len(zip_warnings) == 0, f"Expected no duplicate name warnings, got: {zip_warnings}"
+    
+    # Verify ZIP integrity and unique member paths
+    zip_path = os.path.join(proj_dir, "delivery", "project_package.zip")
+    assert os.path.exists(zip_path)
+    with zipfile.ZipFile(zip_path, "r") as z:
+        names = z.namelist()
+        assert names.count("README.md") == 1
+        assert len(names) == len(set(names))

@@ -1,5 +1,6 @@
 from typing import List, Optional
 from pydantic import BaseModel, Field
+from backend.models.domain import DomainIdentification
 
 class Requirement(BaseModel):
     id: str = Field(..., description="Stable ID like FR-001 or NFR-001")
@@ -19,6 +20,7 @@ class AnalysisResult(BaseModel):
     ambiguities: List[str] = Field(description="Ambiguities detected in the user requirements")
     recommended_capabilities: List[str] = Field(description="Recommended additional capabilities that add value")
     scale_assessment: Optional['ScaleAssessment'] = Field(default=None, description="Detailed scale and engineering complexity assessment")
+    domain_identification: Optional[DomainIdentification] = Field(default=None, description="Structured normalized domain intelligence")
 
 from backend.models.scale import ScaleAssessment
 AnalysisResult.model_rebuild()

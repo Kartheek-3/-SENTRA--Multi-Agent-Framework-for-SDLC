@@ -2,10 +2,13 @@ import sys
 import os
 import time
 import json
+import argparse
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from backend.graph.workflow import create_workflow
 from backend.models.state import ProjectState
+from backend.models.evaluation import ExperimentDefinition, RunConfiguration, ScenarioDefinition
+from backend.evaluation import ExperimentHarness
 from backend.api.projects import projects_db
 from backend.utils import slugify
 
@@ -76,5 +79,46 @@ def run_validation():
         
     print("\nBenchmark Script Completed.")
 
+def run_experiment_command(command: str):
+    scenario = ScenarioDefinition(
+        scenario_id="SCENARIO_03",
+        name="E-commerce application",
+        domain="ecommerce",
+        requirements=REQUIREMENT,
+        expected_capabilities=["authentication", "catalog", "cart", "orders", "tests"],
+        evaluation_metrics=["requirement_coverage", "e2e_pass_rate", "repair_resolution_rate", "contract_compliance_rate"],
+    )
+    config = RunConfiguration(configuration_id="SEAM_FULL", name="SEAM full configuration", mode="SEAM_FULL")
+    definition = ExperimentDefinition(
+        experiment_id="benchmark_ecommerce_experiment",
+        name="SEAM E-commerce Benchmark",
+        description="Recorded benchmark harness example using the existing SEAM workflow and EvaluationEngine.",
+        hypothesis="No conclusion is encoded; compare only recorded observations.",
+        scenarios=[scenario],
+        configurations=[config],
+        repetitions=1,
+        metrics=scenario.evaluation_metrics,
+    )
+    harness = ExperimentHarness()
+    experiment = harness.create_experiment(definition)
+    if command == "run experiment":
+        run_validation()
+        print(json.dumps(experiment.model_dump(), indent=2))
+    elif command == "compare experiment":
+        print(json.dumps([item.model_dump() for item in harness.compare(definition.experiment_id)], indent=2))
+    elif command == "export dataset":
+        print(json.dumps(harness.dataset(experiment), indent=2))
+    elif command == "generate report":
+        print(harness.report(experiment))
+    else:
+        print(f"Command '{command}' is recognized conceptually but requires a recorded run state.")
+
 if __name__ == "__main__":
-    run_validation()
+    parser = argparse.ArgumentParser(description="SEAM benchmark and experiment harness runner")
+    parser.add_argument("command", nargs="*", help="run experiment | run scenario | run baseline | run ablation | compare experiment | export dataset | generate report")
+    args = parser.parse_args()
+    command = " ".join(args.command).strip()
+    if command:
+        run_experiment_command(command)
+    else:
+        run_validation()

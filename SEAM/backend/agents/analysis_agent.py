@@ -2,6 +2,7 @@ from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import PydanticOutputParser
 from backend.models.state import ProjectState
 from backend.models.analysis import AnalysisResult
+from backend.agents.model_compat import active_model_name, get_model_compat
 from backend.performance import estimate_tokens, timed_call, timed_llm_call
 import time
 
@@ -56,18 +57,18 @@ class AnalysisAgent:
 
         prompt = ChatPromptTemplate.from_template(ANALYSIS_PROMPT)
         
-        llm = self.model_router.get_model("analysis")
+        llm = get_model_compat(self.model_router, "analysis")
         
         try:
-            # RAG integration
-            from backend.knowledge.knowledge_service import KnowledgeService
-            ks = KnowledgeService()
-            rag_context = timed_call(
-                "rag_retrieval",
-                lambda: ks.retrieve_for_agent("AnalysisAgent", state.user_requirement),
-                project_id=state.project_id,
-                agent="AnalysisAgent",
+            # RAG integration through ToolRegistry/ToolExecutor.
+            from backend.tools.agent_tools import run_agent_tool
+            rag_result = run_agent_tool(
+                state,
+                "AnalysisAgent",
+                "rag_search",
+                {"query": state.user_requirement, "domain": state.domain or "general", "top_k": 5},
             )
+            rag_context = str(rag_result.structured_data.get("results", [])) if rag_result.success else "No relevant organizational knowledge found."
             
             # We attempt to use with_structured_output if the model supports it natively
             # But ChatOllama with Qwen2.5-coder might need json format with a prompt parser.
@@ -83,7 +84,7 @@ class AnalysisAgent:
                 lambda: chain.invoke(inputs),
                 project_id=state.project_id,
                 agent="AnalysisAgent",
-                model=self.model_router.active_models.get("analysis", {}).get("actual"),
+                model=active_model_name(self.model_router, "analysis"),
                 input_token_estimate=estimate_tokens(inputs),
                 timeout_seconds=getattr(llm, "timeout", None),
                 retry_count=0,
@@ -93,8 +94,17 @@ class AnalysisAgent:
             
             # Update state
             state.structured_requirements = result
-            if not state.domain:
-                state.domain = result.application_domain
+            from backend.knowledge.domain_intelligence import DomainIntelligenceService
+            from backend.evaluation.ablation import capability_enabled, mark_disabled
+            domain_service = DomainIntelligenceService()
+            state.domain_identification = domain_service.identify(state.user_requirement, result)
+            result.domain_identification = state.domain_identification
+            state.domain = state.domain_identification.domain
+            if capability_enabled(state, "domain_rag"):
+                domain_context = domain_service.retrieve_context(state)
+                state.retrieved_context.append(domain_service.format_for_prompt(domain_context))
+            else:
+                mark_disabled(state, "domain_rag", agent_name, "Domain-aware retrieval skipped by experiment configuration.")
 
             from backend.tools.github_intelligence import GitHubIntelligenceTool
             github_tool = GitHubIntelligenceTool()
@@ -110,10 +120,11 @@ class AnalysisAgent:
             doc_path = generate_analysis_document(state.project_id, state.structured_requirements)
             state.design_artifacts.analysis_document_path = doc_path
             analysis_artifacts = generate_analysis_artifacts(state)
+            domain_artifacts = domain_service.persist_artifacts(state) if capability_enabled(state, "domain_rag") else []
             state.execution_history.append({
                 "agent": agent_name,
                 "status": "artifacts_persisted",
-                "artifacts": [artifact["path"] for artifact in analysis_artifacts],
+                "artifacts": [artifact["path"] for artifact in analysis_artifacts + domain_artifacts],
                 "duration": time.time() - start_time
             })
             

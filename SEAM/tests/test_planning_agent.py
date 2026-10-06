@@ -4,7 +4,7 @@ from backend.models.state import ProjectState
 from backend.agents.planning_agent import PlanningAgent
 from backend.models.analysis import AnalysisResult, Requirement
 from backend.models.planning import ProjectPlan, Task
-from langchain_community.chat_models.fake import FakeListChatModel
+from langchain_core.language_models.fake_chat_models import FakeListChatModel
 
 class MockModelRouter:
     def __init__(self, fake_llm):

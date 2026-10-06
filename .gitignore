@@ -6,6 +6,18 @@ __pycache__/
 venv/
 env/
 .env
+.env.*
+**/.env
+**/.env.*
+!.env.example
+!**/.env.example
+*.token
+*.pem
+*.key
+*.secret
+mcp_config.local.json
+.aevum/
+**/.aevum/
 
 # Node / frontend
 node_modules/

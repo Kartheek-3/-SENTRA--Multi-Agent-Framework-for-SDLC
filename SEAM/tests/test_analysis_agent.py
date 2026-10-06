@@ -4,7 +4,7 @@ from backend.models.state import ProjectState
 from backend.agents.analysis_agent import AnalysisAgent
 from backend.models.analysis import AnalysisResult
 from langchain_core.messages import AIMessage
-from langchain_community.chat_models.fake import FakeListChatModel
+from langchain_core.language_models.fake_chat_models import FakeListChatModel
 
 class MockModelRouter:
     def __init__(self, fake_llm):
@@ -40,12 +40,12 @@ def test_analysis_agent_valid_requirement():
     
     assert new_state.structured_requirements is not None
     assert new_state.structured_requirements.application_domain == "E-commerce"
-    assert new_state.domain == "E-commerce"
+    assert new_state.domain == "ecommerce"
+    assert new_state.domain_identification is not None
     assert len(new_state.structured_requirements.functional_requirements) == 1
     
-    assert len(new_state.execution_history) == 1
-    assert new_state.execution_history[0]["status"] == "success"
-    assert "duration" in new_state.execution_history[0]
+    assert new_state.execution_history[-1]["status"] == "success"
+    assert "duration" in new_state.execution_history[-1]
     assert len(new_state.errors) == 0
 
 def test_analysis_agent_empty_requirement():

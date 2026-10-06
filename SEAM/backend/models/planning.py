@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import Any, Dict, List, Optional
 from pydantic import BaseModel, Field
 
 class ArchitectureComponent(BaseModel):
@@ -37,6 +37,85 @@ class ScaleEvolutionStage(BaseModel):
     scaling: str = ""
     deployment: str = ""
     observability: str = ""
+
+class FrontendRoutePlan(BaseModel):
+    path: str
+    page: str
+    authentication_required: bool = False
+    purpose: str = ""
+
+class FrontendComponentPlan(BaseModel):
+    name: str
+    responsibility: str = ""
+    inputs_props: List[str] = Field(default_factory=list)
+    state: List[str] = Field(default_factory=list)
+    dependencies: List[str] = Field(default_factory=list)
+    api_interactions: List[str] = Field(default_factory=list)
+    reusable: bool = False
+
+class FrontendPagePlan(BaseModel):
+    name: str
+    route: str = ""
+    purpose: str = ""
+    components: List[str] = Field(default_factory=list)
+    data_requirements: List[str] = Field(default_factory=list)
+    api_dependencies: List[str] = Field(default_factory=list)
+    authentication_required: bool = False
+    loading_state: str = ""
+    error_state: str = ""
+
+class FrontendServicePlan(BaseModel):
+    name: str
+    responsibility: str = ""
+    api_endpoints: List[str] = Field(default_factory=list)
+    files: List[str] = Field(default_factory=list)
+
+class FrontendAPIIntegration(BaseModel):
+    page: str
+    service: str
+    endpoints: List[str] = Field(default_factory=list)
+    mismatch_notes: List[str] = Field(default_factory=list)
+
+class FrontendFilePlan(BaseModel):
+    path: str
+    operation: str = "CREATE"
+    purpose: str = ""
+
+class FrontendTraceabilityItem(BaseModel):
+    requirement_id: str
+    requirement: str
+    page: str = ""
+    component: str = ""
+    service: str = ""
+    api_endpoint: str = ""
+    file: str = ""
+    validation: str = ""
+
+class FrontendArchitecturePlan(BaseModel):
+    framework: str = "UNKNOWN"
+    language: str = "UNKNOWN"
+    build_system: str = "UNKNOWN"
+    routing_strategy: str = ""
+    state_management: str = ""
+    styling_strategy: str = ""
+    routes: List[FrontendRoutePlan] = Field(default_factory=list)
+    pages: List[FrontendPagePlan] = Field(default_factory=list)
+    layouts: List[str] = Field(default_factory=list)
+    components: List[FrontendComponentPlan] = Field(default_factory=list)
+    reusable_components: List[str] = Field(default_factory=list)
+    services: List[FrontendServicePlan] = Field(default_factory=list)
+    api_integration: List[FrontendAPIIntegration] = Field(default_factory=list)
+    authentication: Dict[str, Any] = Field(default_factory=dict)
+    forms: List[str] = Field(default_factory=list)
+    validation: List[str] = Field(default_factory=list)
+    error_handling: List[str] = Field(default_factory=list)
+    loading_states: List[str] = Field(default_factory=list)
+    responsive_strategy: List[str] = Field(default_factory=list)
+    accessibility_strategy: List[str] = Field(default_factory=list)
+    testing_strategy: List[str] = Field(default_factory=list)
+    file_structure: List[FrontendFilePlan] = Field(default_factory=list)
+    implementation_order: List[str] = Field(default_factory=list)
+    traceability: List[FrontendTraceabilityItem] = Field(default_factory=list)
 
 class SystemDesign(BaseModel):
     architecture_style: str
