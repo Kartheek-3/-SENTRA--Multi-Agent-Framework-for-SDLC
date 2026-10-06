@@ -43,6 +43,10 @@ class DomainContext(BaseModel):
     status: str = "NO_VALIDATED_DOMAIN_KNOWLEDGE_FOUND"
     generated_at: str
 
+    @property
+    def items(self) -> List[RetrievedKnowledge]:
+        return self.retrieved_documents
+
 
 class DomainTraceability(BaseModel):
     user_requirement: str
