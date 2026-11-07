@@ -1,0 +1,1621 @@
+{
+  "timestamp": "2026-10-06T22:17:54.326934+00:00",
+  "framework": "SEAM",
+  "version": "v1.0.1",
+  "experiments": {
+    "EXP_DOMAIN_RAG": {
+      "name": "Domain-Aware RAG Study",
+      "hypothesis": "H1: Domain-aware retrieval changes domain-specific execution metrics.",
+      "runs_count": 6,
+      "comparisons": [
+        {
+          "experiment_id": "EXP_DOMAIN_RAG",
+          "metric": "requirement_coverage",
+          "scenario_id": "ALL",
+          "configuration_id": "ALL",
+          "baseline_configuration_id": null,
+          "values": [
+            0.7143,
+            0.7143,
+            0.7143,
+            0.7143,
+            0.7143,
+            0.7143
+          ],
+          "aggregate": {
+            "metric": "requirement_coverage",
+            "count": 6,
+            "mean": 0.7143,
+            "median": 0.7143,
+            "minimum": 0.7143,
+            "maximum": 0.7143,
+            "standard_deviation": 0.0
+          },
+          "comparisons": [],
+          "data_sources": [
+            "EXP_DOMAIN_RAG-SCENARIO_05-SEAM_FULL-1-0e8c8816",
+            "EXP_DOMAIN_RAG-SCENARIO_05-SEAM_FULL-2-f82c5d52",
+            "EXP_DOMAIN_RAG-SCENARIO_05-SEAM_FULL-3-91ae3861",
+            "EXP_DOMAIN_RAG-SCENARIO_05-ABLATION_NO_DOMAIN_RAG-1-66212bad",
+            "EXP_DOMAIN_RAG-SCENARIO_05-ABLATION_NO_DOMAIN_RAG-2-99fa14d5",
+            "EXP_DOMAIN_RAG-SCENARIO_05-ABLATION_NO_DOMAIN_RAG-3-0f9036c4"
+          ]
+        },
+        {
+          "experiment_id": "EXP_DOMAIN_RAG",
+          "metric": "domain_retrieval_count",
+          "scenario_id": "ALL",
+          "configuration_id": "ALL",
+          "baseline_configuration_id": null,
+          "values": [
+            1,
+            1,
+            1,
+            0,
+            0,
+            0
+          ],
+          "aggregate": {
+            "metric": "domain_retrieval_count",
+            "count": 6,
+            "mean": 0.5,
+            "median": 0.5,
+            "minimum": 0,
+            "maximum": 1,
+            "standard_deviation": 0.5477
+          },
+          "comparisons": [],
+          "data_sources": [
+            "EXP_DOMAIN_RAG-SCENARIO_05-SEAM_FULL-1-0e8c8816",
+            "EXP_DOMAIN_RAG-SCENARIO_05-SEAM_FULL-2-f82c5d52",
+            "EXP_DOMAIN_RAG-SCENARIO_05-SEAM_FULL-3-91ae3861",
+            "EXP_DOMAIN_RAG-SCENARIO_05-ABLATION_NO_DOMAIN_RAG-1-66212bad",
+            "EXP_DOMAIN_RAG-SCENARIO_05-ABLATION_NO_DOMAIN_RAG-2-99fa14d5",
+            "EXP_DOMAIN_RAG-SCENARIO_05-ABLATION_NO_DOMAIN_RAG-3-0f9036c4"
+          ]
+        },
+        {
+          "experiment_id": "EXP_DOMAIN_RAG",
+          "metric": "qa_defect_count",
+          "scenario_id": "ALL",
+          "configuration_id": "ALL",
+          "baseline_configuration_id": null,
+          "values": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "aggregate": {
+            "metric": "qa_defect_count",
+            "count": 6,
+            "mean": 0,
+            "median": 0.0,
+            "minimum": 0,
+            "maximum": 0,
+            "standard_deviation": 0.0
+          },
+          "comparisons": [],
+          "data_sources": [
+            "EXP_DOMAIN_RAG-SCENARIO_05-SEAM_FULL-1-0e8c8816",
+            "EXP_DOMAIN_RAG-SCENARIO_05-SEAM_FULL-2-f82c5d52",
+            "EXP_DOMAIN_RAG-SCENARIO_05-SEAM_FULL-3-91ae3861",
+            "EXP_DOMAIN_RAG-SCENARIO_05-ABLATION_NO_DOMAIN_RAG-1-66212bad",
+            "EXP_DOMAIN_RAG-SCENARIO_05-ABLATION_NO_DOMAIN_RAG-2-99fa14d5",
+            "EXP_DOMAIN_RAG-SCENARIO_05-ABLATION_NO_DOMAIN_RAG-3-0f9036c4"
+          ]
+        },
+        {
+          "experiment_id": "EXP_DOMAIN_RAG",
+          "metric": "contract_compliance_rate",
+          "scenario_id": "ALL",
+          "configuration_id": "ALL",
+          "baseline_configuration_id": null,
+          "values": [],
+          "aggregate": {
+            "metric": "contract_compliance_rate",
+            "count": 0,
+            "mean": "NOT_APPLICABLE",
+            "median": "NOT_APPLICABLE",
+            "minimum": "NOT_APPLICABLE",
+            "maximum": "NOT_APPLICABLE",
+            "standard_deviation": "NOT_APPLICABLE"
+          },
+          "comparisons": [],
+          "data_sources": []
+        },
+        {
+          "experiment_id": "EXP_DOMAIN_RAG",
+          "metric": "e2e_pass_rate",
+          "scenario_id": "ALL",
+          "configuration_id": "ALL",
+          "baseline_configuration_id": null,
+          "values": [
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "aggregate": {
+            "metric": "e2e_pass_rate",
+            "count": 6,
+            "mean": 1.0,
+            "median": 1.0,
+            "minimum": 1.0,
+            "maximum": 1.0,
+            "standard_deviation": 0.0
+          },
+          "comparisons": [],
+          "data_sources": [
+            "EXP_DOMAIN_RAG-SCENARIO_05-SEAM_FULL-1-0e8c8816",
+            "EXP_DOMAIN_RAG-SCENARIO_05-SEAM_FULL-2-f82c5d52",
+            "EXP_DOMAIN_RAG-SCENARIO_05-SEAM_FULL-3-91ae3861",
+            "EXP_DOMAIN_RAG-SCENARIO_05-ABLATION_NO_DOMAIN_RAG-1-66212bad",
+            "EXP_DOMAIN_RAG-SCENARIO_05-ABLATION_NO_DOMAIN_RAG-2-99fa14d5",
+            "EXP_DOMAIN_RAG-SCENARIO_05-ABLATION_NO_DOMAIN_RAG-3-0f9036c4"
+          ]
+        },
+        {
+          "experiment_id": "EXP_DOMAIN_RAG",
+          "metric": "repair_resolution_rate",
+          "scenario_id": "ALL",
+          "configuration_id": "ALL",
+          "baseline_configuration_id": null,
+          "values": [],
+          "aggregate": {
+            "metric": "repair_resolution_rate",
+            "count": 0,
+            "mean": "NOT_APPLICABLE",
+            "median": "NOT_APPLICABLE",
+            "minimum": "NOT_APPLICABLE",
+            "maximum": "NOT_APPLICABLE",
+            "standard_deviation": "NOT_APPLICABLE"
+          },
+          "comparisons": [],
+          "data_sources": []
+        }
+      ],
+      "dataset": [
+        {
+          "experiment_id": "EXP_DOMAIN_RAG",
+          "run_id": "EXP_DOMAIN_RAG-SCENARIO_05-SEAM_FULL-1-0e8c8816",
+          "scenario_id": "SCENARIO_05",
+          "configuration_id": "SEAM_FULL",
+          "repetition_index": 1,
+          "project_id": "EXP-SCENARIO_05-SEAM_FULL-R1-4e914a",
+          "status": "COMPLETED",
+          "configuration": "SEAM_FULL",
+          "disabled_capabilities": [],
+          "requirements": "Build a healthcare appointment application with patient/provider workflow, appointment scheduling, authentication, domain-specific constraints, audit/security requirements, frontend, backend API, database, validation, tests, and README.",
+          "requirement_coverage": 0.7143,
+          "contract_compliance_rate": "NOT_APPLICABLE",
+          "e2e_pass_rate": 1.0,
+          "defect_count": 0,
+          "resolved_defects": 0,
+          "repair_iterations": 0,
+          "repair_resolution_rate": "NOT_APPLICABLE",
+          "tool_invocation_count": 0,
+          "qa_status": "PASS",
+          "delivery_status": "ready",
+          "runtime_duration": "NOT_APPLICABLE",
+          "workflow_duration": 2698,
+          "domain_detected": "healthcare",
+          "evaluation_id": "6dd3f955-8a68-4740-a466-91825e7fe4f4",
+          "git_commit": "c086afd7433311852aa4a25fe70038eb731c51d4",
+          "model": "qwen3-coder-next",
+          "seed": 505,
+          "knowledge_version": "local",
+          "data_quality_valid": true
+        },
+        {
+          "experiment_id": "EXP_DOMAIN_RAG",
+          "run_id": "EXP_DOMAIN_RAG-SCENARIO_05-SEAM_FULL-2-f82c5d52",
+          "scenario_id": "SCENARIO_05",
+          "configuration_id": "SEAM_FULL",
+          "repetition_index": 2,
+          "project_id": "EXP-SCENARIO_05-SEAM_FULL-R2-8140f6",
+          "status": "COMPLETED",
+          "configuration": "SEAM_FULL",
+          "disabled_capabilities": [],
+          "requirements": "Build a healthcare appointment application with patient/provider workflow, appointment scheduling, authentication, domain-specific constraints, audit/security requirements, frontend, backend API, database, validation, tests, and README.",
+          "requirement_coverage": 0.7143,
+          "contract_compliance_rate": "NOT_APPLICABLE",
+          "e2e_pass_rate": 1.0,
+          "defect_count": 0,
+          "resolved_defects": 0,
+          "repair_iterations": 0,
+          "repair_resolution_rate": "NOT_APPLICABLE",
+          "tool_invocation_count": 0,
+          "qa_status": "PASS",
+          "delivery_status": "ready",
+          "runtime_duration": "NOT_APPLICABLE",
+          "workflow_duration": 2866,
+          "domain_detected": "healthcare",
+          "evaluation_id": "884d47fd-c520-4a68-b47c-9ee2f3d3ebf0",
+          "git_commit": "c086afd7433311852aa4a25fe70038eb731c51d4",
+          "model": "qwen3-coder-next",
+          "seed": 505,
+          "knowledge_version": "local",
+          "data_quality_valid": true
+        },
+        {
+          "experiment_id": "EXP_DOMAIN_RAG",
+          "run_id": "EXP_DOMAIN_RAG-SCENARIO_05-SEAM_FULL-3-91ae3861",
+          "scenario_id": "SCENARIO_05",
+          "configuration_id": "SEAM_FULL",
+          "repetition_index": 3,
+          "project_id": "EXP-SCENARIO_05-SEAM_FULL-R3-81550e",
+          "status": "COMPLETED",
+          "configuration": "SEAM_FULL",
+          "disabled_capabilities": [],
+          "requirements": "Build a healthcare appointment application with patient/provider workflow, appointment scheduling, authentication, domain-specific constraints, audit/security requirements, frontend, backend API, database, validation, tests, and README.",
+          "requirement_coverage": 0.7143,
+          "contract_compliance_rate": "NOT_APPLICABLE",
+          "e2e_pass_rate": 1.0,
+          "defect_count": 0,
+          "resolved_defects": 0,
+          "repair_iterations": 0,
+          "repair_resolution_rate": "NOT_APPLICABLE",
+          "tool_invocation_count": 0,
+          "qa_status": "PASS",
+          "delivery_status": "ready",
+          "runtime_duration": "NOT_APPLICABLE",
+          "workflow_duration": 2811,
+          "domain_detected": "healthcare",
+          "evaluation_id": "1bace839-d5e5-4f28-9a07-5f9a041b917e",
+          "git_commit": "c086afd7433311852aa4a25fe70038eb731c51d4",
+          "model": "qwen3-coder-next",
+          "seed": 505,
+          "knowledge_version": "local",
+          "data_quality_valid": true
+        },
+        {
+          "experiment_id": "EXP_DOMAIN_RAG",
+          "run_id": "EXP_DOMAIN_RAG-SCENARIO_05-ABLATION_NO_DOMAIN_RAG-1-66212bad",
+          "scenario_id": "SCENARIO_05",
+          "configuration_id": "ABLATION_NO_DOMAIN_RAG",
+          "repetition_index": 1,
+          "project_id": "EXP-SCENARIO_05-ABLATION_NO_DOMAIN_RAG-R1-e94154",
+          "status": "COMPLETED",
+          "configuration": "ABLATION_NO_DOMAIN_RAG",
+          "disabled_capabilities": [
+            "domain-aware RAG"
+          ],
+          "requirements": "Build a healthcare appointment application with patient/provider workflow, appointment scheduling, authentication, domain-specific constraints, audit/security requirements, frontend, backend API, database, validation, tests, and README.",
+          "requirement_coverage": 0.7143,
+          "contract_compliance_rate": "NOT_APPLICABLE",
+          "e2e_pass_rate": 1.0,
+          "defect_count": 0,
+          "resolved_defects": 0,
+          "repair_iterations": 0,
+          "repair_resolution_rate": "NOT_APPLICABLE",
+          "tool_invocation_count": 0,
+          "qa_status": "PASS",
+          "delivery_status": "ready",
+          "runtime_duration": "NOT_APPLICABLE",
+          "workflow_duration": 2381,
+          "domain_detected": "healthcare",
+          "evaluation_id": "6a769014-2b16-4b0e-941e-e68fdafd830d",
+          "git_commit": "c086afd7433311852aa4a25fe70038eb731c51d4",
+          "model": "qwen3-coder-next",
+          "seed": 505,
+          "knowledge_version": "local",
+          "data_quality_valid": true
+        },
+        {
+          "experiment_id": "EXP_DOMAIN_RAG",
+          "run_id": "EXP_DOMAIN_RAG-SCENARIO_05-ABLATION_NO_DOMAIN_RAG-2-99fa14d5",
+          "scenario_id": "SCENARIO_05",
+          "configuration_id": "ABLATION_NO_DOMAIN_RAG",
+          "repetition_index": 2,
+          "project_id": "EXP-SCENARIO_05-ABLATION_NO_DOMAIN_RAG-R2-3b4217",
+          "status": "COMPLETED",
+          "configuration": "ABLATION_NO_DOMAIN_RAG",
+          "disabled_capabilities": [
+            "domain-aware RAG"
+          ],
+          "requirements": "Build a healthcare appointment application with patient/provider workflow, appointment scheduling, authentication, domain-specific constraints, audit/security requirements, frontend, backend API, database, validation, tests, and README.",
+          "requirement_coverage": 0.7143,
+          "contract_compliance_rate": "NOT_APPLICABLE",
+          "e2e_pass_rate": 1.0,
+          "defect_count": 0,
+          "resolved_defects": 0,
+          "repair_iterations": 0,
+          "repair_resolution_rate": "NOT_APPLICABLE",
+          "tool_invocation_count": 0,
+          "qa_status": "PASS",
+          "delivery_status": "ready",
+          "runtime_duration": "NOT_APPLICABLE",
+          "workflow_duration": 2191,
+          "domain_detected": "healthcare",
+          "evaluation_id": "3003ece3-e386-44ab-8b5f-d1b68689c52e",
+          "git_commit": "c086afd7433311852aa4a25fe70038eb731c51d4",
+          "model": "qwen3-coder-next",
+          "seed": 505,
+          "knowledge_version": "local",
+          "data_quality_valid": true
+        },
+        {
+          "experiment_id": "EXP_DOMAIN_RAG",
+          "run_id": "EXP_DOMAIN_RAG-SCENARIO_05-ABLATION_NO_DOMAIN_RAG-3-0f9036c4",
+          "scenario_id": "SCENARIO_05",
+          "configuration_id": "ABLATION_NO_DOMAIN_RAG",
+          "repetition_index": 3,
+          "project_id": "EXP-SCENARIO_05-ABLATION_NO_DOMAIN_RAG-R3-5bb64a",
+          "status": "COMPLETED",
+          "configuration": "ABLATION_NO_DOMAIN_RAG",
+          "disabled_capabilities": [
+            "domain-aware RAG"
+          ],
+          "requirements": "Build a healthcare appointment application with patient/provider workflow, appointment scheduling, authentication, domain-specific constraints, audit/security requirements, frontend, backend API, database, validation, tests, and README.",
+          "requirement_coverage": 0.7143,
+          "contract_compliance_rate": "NOT_APPLICABLE",
+          "e2e_pass_rate": 1.0,
+          "defect_count": 0,
+          "resolved_defects": 0,
+          "repair_iterations": 0,
+          "repair_resolution_rate": "NOT_APPLICABLE",
+          "tool_invocation_count": 0,
+          "qa_status": "PASS",
+          "delivery_status": "ready",
+          "runtime_duration": "NOT_APPLICABLE",
+          "workflow_duration": 2136,
+          "domain_detected": "healthcare",
+          "evaluation_id": "ee29a4ff-5475-4801-9623-2e2bfea6bba2",
+          "git_commit": "c086afd7433311852aa4a25fe70038eb731c51d4",
+          "model": "qwen3-coder-next",
+          "seed": 505,
+          "knowledge_version": "local",
+          "data_quality_valid": true
+        }
+      ]
+    },
+    "EXP_AUTONOMOUS_REPAIR": {
+      "name": "Autonomous Repair Study",
+      "hypothesis": "H2: Autonomous repair changes defect resolution metrics.",
+      "runs_count": 6,
+      "comparisons": [
+        {
+          "experiment_id": "EXP_AUTONOMOUS_REPAIR",
+          "metric": "defect_count",
+          "scenario_id": "ALL",
+          "configuration_id": "ALL",
+          "baseline_configuration_id": null,
+          "values": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "aggregate": {
+            "metric": "defect_count",
+            "count": 6,
+            "mean": 0,
+            "median": 0.0,
+            "minimum": 0,
+            "maximum": 0,
+            "standard_deviation": 0.0
+          },
+          "comparisons": [],
+          "data_sources": [
+            "EXP_AUTONOMOUS_REPAIR-SCENARIO_02-SEAM_FULL-1-649a8557",
+            "EXP_AUTONOMOUS_REPAIR-SCENARIO_02-SEAM_FULL-2-a36ca29d",
+            "EXP_AUTONOMOUS_REPAIR-SCENARIO_02-SEAM_FULL-3-37f8aeb1",
+            "EXP_AUTONOMOUS_REPAIR-SCENARIO_02-ABLATION_NO_AUTONOMOUS_REPAIR-1-b969de95",
+            "EXP_AUTONOMOUS_REPAIR-SCENARIO_02-ABLATION_NO_AUTONOMOUS_REPAIR-2-4b087932",
+            "EXP_AUTONOMOUS_REPAIR-SCENARIO_02-ABLATION_NO_AUTONOMOUS_REPAIR-3-53d73b92"
+          ]
+        },
+        {
+          "experiment_id": "EXP_AUTONOMOUS_REPAIR",
+          "metric": "repair_count",
+          "scenario_id": "ALL",
+          "configuration_id": "ALL",
+          "baseline_configuration_id": null,
+          "values": [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          "aggregate": {
+            "metric": "repair_count",
+            "count": 6,
+            "mean": 1,
+            "median": 1.0,
+            "minimum": 1,
+            "maximum": 1,
+            "standard_deviation": 0.0
+          },
+          "comparisons": [],
+          "data_sources": [
+            "EXP_AUTONOMOUS_REPAIR-SCENARIO_02-SEAM_FULL-1-649a8557",
+            "EXP_AUTONOMOUS_REPAIR-SCENARIO_02-SEAM_FULL-2-a36ca29d",
+            "EXP_AUTONOMOUS_REPAIR-SCENARIO_02-SEAM_FULL-3-37f8aeb1",
+            "EXP_AUTONOMOUS_REPAIR-SCENARIO_02-ABLATION_NO_AUTONOMOUS_REPAIR-1-b969de95",
+            "EXP_AUTONOMOUS_REPAIR-SCENARIO_02-ABLATION_NO_AUTONOMOUS_REPAIR-2-4b087932",
+            "EXP_AUTONOMOUS_REPAIR-SCENARIO_02-ABLATION_NO_AUTONOMOUS_REPAIR-3-53d73b92"
+          ]
+        },
+        {
+          "experiment_id": "EXP_AUTONOMOUS_REPAIR",
+          "metric": "repair_resolution_rate",
+          "scenario_id": "ALL",
+          "configuration_id": "ALL",
+          "baseline_configuration_id": null,
+          "values": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "aggregate": {
+            "metric": "repair_resolution_rate",
+            "count": 6,
+            "mean": 0.0,
+            "median": 0.0,
+            "minimum": 0.0,
+            "maximum": 0.0,
+            "standard_deviation": 0.0
+          },
+          "comparisons": [],
+          "data_sources": [
+            "EXP_AUTONOMOUS_REPAIR-SCENARIO_02-SEAM_FULL-1-649a8557",
+            "EXP_AUTONOMOUS_REPAIR-SCENARIO_02-SEAM_FULL-2-a36ca29d",
+            "EXP_AUTONOMOUS_REPAIR-SCENARIO_02-SEAM_FULL-3-37f8aeb1",
+            "EXP_AUTONOMOUS_REPAIR-SCENARIO_02-ABLATION_NO_AUTONOMOUS_REPAIR-1-b969de95",
+            "EXP_AUTONOMOUS_REPAIR-SCENARIO_02-ABLATION_NO_AUTONOMOUS_REPAIR-2-4b087932",
+            "EXP_AUTONOMOUS_REPAIR-SCENARIO_02-ABLATION_NO_AUTONOMOUS_REPAIR-3-53d73b92"
+          ]
+        },
+        {
+          "experiment_id": "EXP_AUTONOMOUS_REPAIR",
+          "metric": "targeted_verification_pass_rate",
+          "scenario_id": "ALL",
+          "configuration_id": "ALL",
+          "baseline_configuration_id": null,
+          "values": [
+            1.0,
+            1.0,
+            1.0
+          ],
+          "aggregate": {
+            "metric": "targeted_verification_pass_rate",
+            "count": 3,
+            "mean": 1.0,
+            "median": 1.0,
+            "minimum": 1.0,
+            "maximum": 1.0,
+            "standard_deviation": 0.0
+          },
+          "comparisons": [],
+          "data_sources": [
+            "EXP_AUTONOMOUS_REPAIR-SCENARIO_02-SEAM_FULL-1-649a8557",
+            "EXP_AUTONOMOUS_REPAIR-SCENARIO_02-SEAM_FULL-2-a36ca29d",
+            "EXP_AUTONOMOUS_REPAIR-SCENARIO_02-SEAM_FULL-3-37f8aeb1"
+          ]
+        },
+        {
+          "experiment_id": "EXP_AUTONOMOUS_REPAIR",
+          "metric": "regression_pass_rate",
+          "scenario_id": "ALL",
+          "configuration_id": "ALL",
+          "baseline_configuration_id": null,
+          "values": [
+            1.0,
+            1.0,
+            1.0
+          ],
+          "aggregate": {
+            "metric": "regression_pass_rate",
+            "count": 3,
+            "mean": 1.0,
+            "median": 1.0,
+            "minimum": 1.0,
+            "maximum": 1.0,
+            "standard_deviation": 0.0
+          },
+          "comparisons": [],
+          "data_sources": [
+            "EXP_AUTONOMOUS_REPAIR-SCENARIO_02-SEAM_FULL-1-649a8557",
+            "EXP_AUTONOMOUS_REPAIR-SCENARIO_02-SEAM_FULL-2-a36ca29d",
+            "EXP_AUTONOMOUS_REPAIR-SCENARIO_02-SEAM_FULL-3-37f8aeb1"
+          ]
+        },
+        {
+          "experiment_id": "EXP_AUTONOMOUS_REPAIR",
+          "metric": "qa_status",
+          "scenario_id": "ALL",
+          "configuration_id": "ALL",
+          "baseline_configuration_id": null,
+          "values": [],
+          "aggregate": {
+            "metric": "qa_status",
+            "count": 0,
+            "mean": "NOT_APPLICABLE",
+            "median": "NOT_APPLICABLE",
+            "minimum": "NOT_APPLICABLE",
+            "maximum": "NOT_APPLICABLE",
+            "standard_deviation": "NOT_APPLICABLE"
+          },
+          "comparisons": [],
+          "data_sources": []
+        }
+      ],
+      "dataset": [
+        {
+          "experiment_id": "EXP_AUTONOMOUS_REPAIR",
+          "run_id": "EXP_AUTONOMOUS_REPAIR-SCENARIO_02-SEAM_FULL-1-649a8557",
+          "scenario_id": "SCENARIO_02",
+          "configuration_id": "SEAM_FULL",
+          "repetition_index": 1,
+          "project_id": "EXP-SCENARIO_02-SEAM_FULL-R1-d367bc",
+          "status": "COMPLETED",
+          "configuration": "SEAM_FULL",
+          "disabled_capabilities": [],
+          "requirements": "Build an authentication application with registration, login, logout, protected route, authentication API, persistent user state, invalid credentials handling, frontend, backend, database, validation, and tests.",
+          "requirement_coverage": 0.7143,
+          "contract_compliance_rate": "NOT_APPLICABLE",
+          "e2e_pass_rate": 1.0,
+          "defect_count": 0,
+          "resolved_defects": 1,
+          "repair_iterations": 1,
+          "repair_resolution_rate": 0.0,
+          "tool_invocation_count": 0,
+          "qa_status": "PASS",
+          "delivery_status": "ready",
+          "runtime_duration": "NOT_APPLICABLE",
+          "workflow_duration": 3053,
+          "domain_detected": "identity",
+          "evaluation_id": "ada096b8-6ff3-43b9-a74f-e03cae23bf01",
+          "git_commit": "c086afd7433311852aa4a25fe70038eb731c51d4",
+          "model": "qwen3-coder-next",
+          "seed": 202,
+          "knowledge_version": "local",
+          "data_quality_valid": true
+        },
+        {
+          "experiment_id": "EXP_AUTONOMOUS_REPAIR",
+          "run_id": "EXP_AUTONOMOUS_REPAIR-SCENARIO_02-SEAM_FULL-2-a36ca29d",
+          "scenario_id": "SCENARIO_02",
+          "configuration_id": "SEAM_FULL",
+          "repetition_index": 2,
+          "project_id": "EXP-SCENARIO_02-SEAM_FULL-R2-ba276d",
+          "status": "COMPLETED",
+          "configuration": "SEAM_FULL",
+          "disabled_capabilities": [],
+          "requirements": "Build an authentication application with registration, login, logout, protected route, authentication API, persistent user state, invalid credentials handling, frontend, backend, database, validation, and tests.",
+          "requirement_coverage": 0.7143,
+          "contract_compliance_rate": "NOT_APPLICABLE",
+          "e2e_pass_rate": 1.0,
+          "defect_count": 0,
+          "resolved_defects": 1,
+          "repair_iterations": 1,
+          "repair_resolution_rate": 0.0,
+          "tool_invocation_count": 0,
+          "qa_status": "PASS",
+          "delivery_status": "ready",
+          "runtime_duration": "NOT_APPLICABLE",
+          "workflow_duration": 2973,
+          "domain_detected": "identity",
+          "evaluation_id": "b432b926-9988-44e7-96f9-3af3ffeaf172",
+          "git_commit": "c086afd7433311852aa4a25fe70038eb731c51d4",
+          "model": "qwen3-coder-next",
+          "seed": 202,
+          "knowledge_version": "local",
+          "data_quality_valid": true
+        },
+        {
+          "experiment_id": "EXP_AUTONOMOUS_REPAIR",
+          "run_id": "EXP_AUTONOMOUS_REPAIR-SCENARIO_02-SEAM_FULL-3-37f8aeb1",
+          "scenario_id": "SCENARIO_02",
+          "configuration_id": "SEAM_FULL",
+          "repetition_index": 3,
+          "project_id": "EXP-SCENARIO_02-SEAM_FULL-R3-cc92fd",
+          "status": "COMPLETED",
+          "configuration": "SEAM_FULL",
+          "disabled_capabilities": [],
+          "requirements": "Build an authentication application with registration, login, logout, protected route, authentication API, persistent user state, invalid credentials handling, frontend, backend, database, validation, and tests.",
+          "requirement_coverage": 0.7143,
+          "contract_compliance_rate": "NOT_APPLICABLE",
+          "e2e_pass_rate": 1.0,
+          "defect_count": 0,
+          "resolved_defects": 1,
+          "repair_iterations": 1,
+          "repair_resolution_rate": 0.0,
+          "tool_invocation_count": 0,
+          "qa_status": "PASS",
+          "delivery_status": "ready",
+          "runtime_duration": "NOT_APPLICABLE",
+          "workflow_duration": 2955,
+          "domain_detected": "identity",
+          "evaluation_id": "36751465-bc48-4a95-9f86-024759144a48",
+          "git_commit": "c086afd7433311852aa4a25fe70038eb731c51d4",
+          "model": "qwen3-coder-next",
+          "seed": 202,
+          "knowledge_version": "local",
+          "data_quality_valid": true
+        },
+        {
+          "experiment_id": "EXP_AUTONOMOUS_REPAIR",
+          "run_id": "EXP_AUTONOMOUS_REPAIR-SCENARIO_02-ABLATION_NO_AUTONOMOUS_REPAIR-1-b969de95",
+          "scenario_id": "SCENARIO_02",
+          "configuration_id": "ABLATION_NO_AUTONOMOUS_REPAIR",
+          "repetition_index": 1,
+          "project_id": "EXP-SCENARIO_02-ABLATION_NO_AUTONOMOUS_REPAIR-R1-d7152a",
+          "status": "COMPLETED",
+          "configuration": "ABLATION_NO_AUTONOMOUS_REPAIR",
+          "disabled_capabilities": [
+            "autonomous repair"
+          ],
+          "requirements": "Build an authentication application with registration, login, logout, protected route, authentication API, persistent user state, invalid credentials handling, frontend, backend, database, validation, and tests.",
+          "requirement_coverage": 0.0,
+          "contract_compliance_rate": "NOT_APPLICABLE",
+          "e2e_pass_rate": 0.0,
+          "defect_count": 0,
+          "resolved_defects": 0,
+          "repair_iterations": 0,
+          "repair_resolution_rate": 0.0,
+          "tool_invocation_count": 0,
+          "qa_status": "PASS",
+          "delivery_status": "blocked",
+          "runtime_duration": "NOT_APPLICABLE",
+          "workflow_duration": 3192,
+          "domain_detected": "identity",
+          "evaluation_id": "65b4fa10-14ac-438a-b99a-62b2d096f0f7",
+          "git_commit": "c086afd7433311852aa4a25fe70038eb731c51d4",
+          "model": "qwen3-coder-next",
+          "seed": 202,
+          "knowledge_version": "local",
+          "data_quality_valid": true
+        },
+        {
+          "experiment_id": "EXP_AUTONOMOUS_REPAIR",
+          "run_id": "EXP_AUTONOMOUS_REPAIR-SCENARIO_02-ABLATION_NO_AUTONOMOUS_REPAIR-2-4b087932",
+          "scenario_id": "SCENARIO_02",
+          "configuration_id": "ABLATION_NO_AUTONOMOUS_REPAIR",
+          "repetition_index": 2,
+          "project_id": "EXP-SCENARIO_02-ABLATION_NO_AUTONOMOUS_REPAIR-R2-bfc632",
+          "status": "COMPLETED",
+          "configuration": "ABLATION_NO_AUTONOMOUS_REPAIR",
+          "disabled_capabilities": [
+            "autonomous repair"
+          ],
+          "requirements": "Build an authentication application with registration, login, logout, protected route, authentication API, persistent user state, invalid credentials handling, frontend, backend, database, validation, and tests.",
+          "requirement_coverage": 0.0,
+          "contract_compliance_rate": "NOT_APPLICABLE",
+          "e2e_pass_rate": 0.0,
+          "defect_count": 0,
+          "resolved_defects": 0,
+          "repair_iterations": 0,
+          "repair_resolution_rate": 0.0,
+          "tool_invocation_count": 0,
+          "qa_status": "PASS",
+          "delivery_status": "blocked",
+          "runtime_duration": "NOT_APPLICABLE",
+          "workflow_duration": 3216,
+          "domain_detected": "identity",
+          "evaluation_id": "bb1b74fe-2215-45c0-a592-e9778e959e72",
+          "git_commit": "c086afd7433311852aa4a25fe70038eb731c51d4",
+          "model": "qwen3-coder-next",
+          "seed": 202,
+          "knowledge_version": "local",
+          "data_quality_valid": true
+        },
+        {
+          "experiment_id": "EXP_AUTONOMOUS_REPAIR",
+          "run_id": "EXP_AUTONOMOUS_REPAIR-SCENARIO_02-ABLATION_NO_AUTONOMOUS_REPAIR-3-53d73b92",
+          "scenario_id": "SCENARIO_02",
+          "configuration_id": "ABLATION_NO_AUTONOMOUS_REPAIR",
+          "repetition_index": 3,
+          "project_id": "EXP-SCENARIO_02-ABLATION_NO_AUTONOMOUS_REPAIR-R3-a2d0b6",
+          "status": "COMPLETED",
+          "configuration": "ABLATION_NO_AUTONOMOUS_REPAIR",
+          "disabled_capabilities": [
+            "autonomous repair"
+          ],
+          "requirements": "Build an authentication application with registration, login, logout, protected route, authentication API, persistent user state, invalid credentials handling, frontend, backend, database, validation, and tests.",
+          "requirement_coverage": 0.0,
+          "contract_compliance_rate": "NOT_APPLICABLE",
+          "e2e_pass_rate": 0.0,
+          "defect_count": 0,
+          "resolved_defects": 0,
+          "repair_iterations": 0,
+          "repair_resolution_rate": 0.0,
+          "tool_invocation_count": 0,
+          "qa_status": "PASS",
+          "delivery_status": "blocked",
+          "runtime_duration": "NOT_APPLICABLE",
+          "workflow_duration": 3420,
+          "domain_detected": "identity",
+          "evaluation_id": "18e8e881-5324-424c-b265-699c8d9d6520",
+          "git_commit": "c086afd7433311852aa4a25fe70038eb731c51d4",
+          "model": "qwen3-coder-next",
+          "seed": 202,
+          "knowledge_version": "local",
+          "data_quality_valid": true
+        }
+      ]
+    },
+    "EXP_CONTRACT_INTELLIGENCE": {
+      "name": "Contract Intelligence Study",
+      "hypothesis": "H3: Contract intelligence changes contract compliance metrics.",
+      "runs_count": 6,
+      "comparisons": [
+        {
+          "experiment_id": "EXP_CONTRACT_INTELLIGENCE",
+          "metric": "contract_issues",
+          "scenario_id": "ALL",
+          "configuration_id": "ALL",
+          "baseline_configuration_id": null,
+          "values": [
+            0,
+            0,
+            0,
+            1,
+            1,
+            1
+          ],
+          "aggregate": {
+            "metric": "contract_issues",
+            "count": 6,
+            "mean": 0.5,
+            "median": 0.5,
+            "minimum": 0,
+            "maximum": 1,
+            "standard_deviation": 0.5477
+          },
+          "comparisons": [],
+          "data_sources": [
+            "EXP_CONTRACT_INTELLIGENCE-SCENARIO_03-SEAM_FULL-1-5198e763",
+            "EXP_CONTRACT_INTELLIGENCE-SCENARIO_03-SEAM_FULL-2-fd8dc6a5",
+            "EXP_CONTRACT_INTELLIGENCE-SCENARIO_03-SEAM_FULL-3-712c41e5",
+            "EXP_CONTRACT_INTELLIGENCE-SCENARIO_03-ABLATION_NO_CONTRACT_INTELLIGENCE-1-46cbdd00",
+            "EXP_CONTRACT_INTELLIGENCE-SCENARIO_03-ABLATION_NO_CONTRACT_INTELLIGENCE-2-7b2d9d76",
+            "EXP_CONTRACT_INTELLIGENCE-SCENARIO_03-ABLATION_NO_CONTRACT_INTELLIGENCE-3-d4038363"
+          ]
+        },
+        {
+          "experiment_id": "EXP_CONTRACT_INTELLIGENCE",
+          "metric": "runtime_failures",
+          "scenario_id": "ALL",
+          "configuration_id": "ALL",
+          "baseline_configuration_id": null,
+          "values": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "aggregate": {
+            "metric": "runtime_failures",
+            "count": 6,
+            "mean": 0,
+            "median": 0.0,
+            "minimum": 0,
+            "maximum": 0,
+            "standard_deviation": 0.0
+          },
+          "comparisons": [],
+          "data_sources": [
+            "EXP_CONTRACT_INTELLIGENCE-SCENARIO_03-SEAM_FULL-1-5198e763",
+            "EXP_CONTRACT_INTELLIGENCE-SCENARIO_03-SEAM_FULL-2-fd8dc6a5",
+            "EXP_CONTRACT_INTELLIGENCE-SCENARIO_03-SEAM_FULL-3-712c41e5",
+            "EXP_CONTRACT_INTELLIGENCE-SCENARIO_03-ABLATION_NO_CONTRACT_INTELLIGENCE-1-46cbdd00",
+            "EXP_CONTRACT_INTELLIGENCE-SCENARIO_03-ABLATION_NO_CONTRACT_INTELLIGENCE-2-7b2d9d76",
+            "EXP_CONTRACT_INTELLIGENCE-SCENARIO_03-ABLATION_NO_CONTRACT_INTELLIGENCE-3-d4038363"
+          ]
+        },
+        {
+          "experiment_id": "EXP_CONTRACT_INTELLIGENCE",
+          "metric": "e2e_failures",
+          "scenario_id": "ALL",
+          "configuration_id": "ALL",
+          "baseline_configuration_id": null,
+          "values": [
+            0,
+            0,
+            0,
+            1,
+            1,
+            1
+          ],
+          "aggregate": {
+            "metric": "e2e_failures",
+            "count": 6,
+            "mean": 0.5,
+            "median": 0.5,
+            "minimum": 0,
+            "maximum": 1,
+            "standard_deviation": 0.5477
+          },
+          "comparisons": [],
+          "data_sources": [
+            "EXP_CONTRACT_INTELLIGENCE-SCENARIO_03-SEAM_FULL-1-5198e763",
+            "EXP_CONTRACT_INTELLIGENCE-SCENARIO_03-SEAM_FULL-2-fd8dc6a5",
+            "EXP_CONTRACT_INTELLIGENCE-SCENARIO_03-SEAM_FULL-3-712c41e5",
+            "EXP_CONTRACT_INTELLIGENCE-SCENARIO_03-ABLATION_NO_CONTRACT_INTELLIGENCE-1-46cbdd00",
+            "EXP_CONTRACT_INTELLIGENCE-SCENARIO_03-ABLATION_NO_CONTRACT_INTELLIGENCE-2-7b2d9d76",
+            "EXP_CONTRACT_INTELLIGENCE-SCENARIO_03-ABLATION_NO_CONTRACT_INTELLIGENCE-3-d4038363"
+          ]
+        },
+        {
+          "experiment_id": "EXP_CONTRACT_INTELLIGENCE",
+          "metric": "repair_iterations",
+          "scenario_id": "ALL",
+          "configuration_id": "ALL",
+          "baseline_configuration_id": null,
+          "values": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "aggregate": {
+            "metric": "repair_iterations",
+            "count": 6,
+            "mean": 0,
+            "median": 0.0,
+            "minimum": 0,
+            "maximum": 0,
+            "standard_deviation": 0.0
+          },
+          "comparisons": [],
+          "data_sources": [
+            "EXP_CONTRACT_INTELLIGENCE-SCENARIO_03-SEAM_FULL-1-5198e763",
+            "EXP_CONTRACT_INTELLIGENCE-SCENARIO_03-SEAM_FULL-2-fd8dc6a5",
+            "EXP_CONTRACT_INTELLIGENCE-SCENARIO_03-SEAM_FULL-3-712c41e5",
+            "EXP_CONTRACT_INTELLIGENCE-SCENARIO_03-ABLATION_NO_CONTRACT_INTELLIGENCE-1-46cbdd00",
+            "EXP_CONTRACT_INTELLIGENCE-SCENARIO_03-ABLATION_NO_CONTRACT_INTELLIGENCE-2-7b2d9d76",
+            "EXP_CONTRACT_INTELLIGENCE-SCENARIO_03-ABLATION_NO_CONTRACT_INTELLIGENCE-3-d4038363"
+          ]
+        },
+        {
+          "experiment_id": "EXP_CONTRACT_INTELLIGENCE",
+          "metric": "qa_status",
+          "scenario_id": "ALL",
+          "configuration_id": "ALL",
+          "baseline_configuration_id": null,
+          "values": [],
+          "aggregate": {
+            "metric": "qa_status",
+            "count": 0,
+            "mean": "NOT_APPLICABLE",
+            "median": "NOT_APPLICABLE",
+            "minimum": "NOT_APPLICABLE",
+            "maximum": "NOT_APPLICABLE",
+            "standard_deviation": "NOT_APPLICABLE"
+          },
+          "comparisons": [],
+          "data_sources": []
+        },
+        {
+          "experiment_id": "EXP_CONTRACT_INTELLIGENCE",
+          "metric": "contract_compliance_rate",
+          "scenario_id": "ALL",
+          "configuration_id": "ALL",
+          "baseline_configuration_id": null,
+          "values": [],
+          "aggregate": {
+            "metric": "contract_compliance_rate",
+            "count": 0,
+            "mean": "NOT_APPLICABLE",
+            "median": "NOT_APPLICABLE",
+            "minimum": "NOT_APPLICABLE",
+            "maximum": "NOT_APPLICABLE",
+            "standard_deviation": "NOT_APPLICABLE"
+          },
+          "comparisons": [],
+          "data_sources": []
+        }
+      ],
+      "dataset": [
+        {
+          "experiment_id": "EXP_CONTRACT_INTELLIGENCE",
+          "run_id": "EXP_CONTRACT_INTELLIGENCE-SCENARIO_03-SEAM_FULL-1-5198e763",
+          "scenario_id": "SCENARIO_03",
+          "configuration_id": "SEAM_FULL",
+          "repetition_index": 1,
+          "project_id": "EXP-SCENARIO_03-SEAM_FULL-R1-b053ee",
+          "status": "COMPLETED",
+          "configuration": "SEAM_FULL",
+          "disabled_capabilities": [],
+          "requirements": "Build an e-commerce application with products, search, cart, checkout, inventory, order creation, REST API, database persistence, frontend UI, validation, API tests, unit tests, and README.",
+          "requirement_coverage": 0.5556,
+          "contract_compliance_rate": "NOT_APPLICABLE",
+          "e2e_pass_rate": 1.0,
+          "defect_count": 0,
+          "resolved_defects": 0,
+          "repair_iterations": 0,
+          "repair_resolution_rate": "NOT_APPLICABLE",
+          "tool_invocation_count": 0,
+          "qa_status": "PASS",
+          "delivery_status": "ready",
+          "runtime_duration": "NOT_APPLICABLE",
+          "workflow_duration": 3304,
+          "domain_detected": "commerce",
+          "evaluation_id": "b983b1a1-092c-47dc-aa02-d0126ddc74fd",
+          "git_commit": "c086afd7433311852aa4a25fe70038eb731c51d4",
+          "model": "qwen3-coder-next",
+          "seed": 303,
+          "knowledge_version": "local",
+          "data_quality_valid": true
+        },
+        {
+          "experiment_id": "EXP_CONTRACT_INTELLIGENCE",
+          "run_id": "EXP_CONTRACT_INTELLIGENCE-SCENARIO_03-SEAM_FULL-2-fd8dc6a5",
+          "scenario_id": "SCENARIO_03",
+          "configuration_id": "SEAM_FULL",
+          "repetition_index": 2,
+          "project_id": "EXP-SCENARIO_03-SEAM_FULL-R2-a73584",
+          "status": "COMPLETED",
+          "configuration": "SEAM_FULL",
+          "disabled_capabilities": [],
+          "requirements": "Build an e-commerce application with products, search, cart, checkout, inventory, order creation, REST API, database persistence, frontend UI, validation, API tests, unit tests, and README.",
+          "requirement_coverage": 0.5556,
+          "contract_compliance_rate": "NOT_APPLICABLE",
+          "e2e_pass_rate": 1.0,
+          "defect_count": 0,
+          "resolved_defects": 0,
+          "repair_iterations": 0,
+          "repair_resolution_rate": "NOT_APPLICABLE",
+          "tool_invocation_count": 0,
+          "qa_status": "PASS",
+          "delivery_status": "ready",
+          "runtime_duration": "NOT_APPLICABLE",
+          "workflow_duration": 3498,
+          "domain_detected": "commerce",
+          "evaluation_id": "d6a73037-c189-4081-8388-210b1841eac0",
+          "git_commit": "c086afd7433311852aa4a25fe70038eb731c51d4",
+          "model": "qwen3-coder-next",
+          "seed": 303,
+          "knowledge_version": "local",
+          "data_quality_valid": true
+        },
+        {
+          "experiment_id": "EXP_CONTRACT_INTELLIGENCE",
+          "run_id": "EXP_CONTRACT_INTELLIGENCE-SCENARIO_03-SEAM_FULL-3-712c41e5",
+          "scenario_id": "SCENARIO_03",
+          "configuration_id": "SEAM_FULL",
+          "repetition_index": 3,
+          "project_id": "EXP-SCENARIO_03-SEAM_FULL-R3-406813",
+          "status": "COMPLETED",
+          "configuration": "SEAM_FULL",
+          "disabled_capabilities": [],
+          "requirements": "Build an e-commerce application with products, search, cart, checkout, inventory, order creation, REST API, database persistence, frontend UI, validation, API tests, unit tests, and README.",
+          "requirement_coverage": 0.5556,
+          "contract_compliance_rate": "NOT_APPLICABLE",
+          "e2e_pass_rate": 1.0,
+          "defect_count": 0,
+          "resolved_defects": 0,
+          "repair_iterations": 0,
+          "repair_resolution_rate": "NOT_APPLICABLE",
+          "tool_invocation_count": 0,
+          "qa_status": "PASS",
+          "delivery_status": "ready",
+          "runtime_duration": "NOT_APPLICABLE",
+          "workflow_duration": 3324,
+          "domain_detected": "commerce",
+          "evaluation_id": "f3155710-1100-4a96-9d38-99dfef35fc8a",
+          "git_commit": "c086afd7433311852aa4a25fe70038eb731c51d4",
+          "model": "qwen3-coder-next",
+          "seed": 303,
+          "knowledge_version": "local",
+          "data_quality_valid": true
+        },
+        {
+          "experiment_id": "EXP_CONTRACT_INTELLIGENCE",
+          "run_id": "EXP_CONTRACT_INTELLIGENCE-SCENARIO_03-ABLATION_NO_CONTRACT_INTELLIGENCE-1-46cbdd00",
+          "scenario_id": "SCENARIO_03",
+          "configuration_id": "ABLATION_NO_CONTRACT_INTELLIGENCE",
+          "repetition_index": 1,
+          "project_id": "EXP-SCENARIO_03-ABLATION_NO_CONTRACT_INTELLIGENCE-R1-8b56bf",
+          "status": "COMPLETED",
+          "configuration": "ABLATION_NO_CONTRACT_INTELLIGENCE",
+          "disabled_capabilities": [
+            "full-stack contract intelligence"
+          ],
+          "requirements": "Build an e-commerce application with products, search, cart, checkout, inventory, order creation, REST API, database persistence, frontend UI, validation, API tests, unit tests, and README.",
+          "requirement_coverage": 0.0,
+          "contract_compliance_rate": "NOT_APPLICABLE",
+          "e2e_pass_rate": 0.0,
+          "defect_count": 0,
+          "resolved_defects": 0,
+          "repair_iterations": 0,
+          "repair_resolution_rate": "NOT_APPLICABLE",
+          "tool_invocation_count": 0,
+          "qa_status": "PASS",
+          "delivery_status": "blocked",
+          "runtime_duration": "NOT_APPLICABLE",
+          "workflow_duration": 462,
+          "domain_detected": "commerce",
+          "evaluation_id": "67709299-eb1d-4967-9a0f-18d0107994ca",
+          "git_commit": "c086afd7433311852aa4a25fe70038eb731c51d4",
+          "model": "qwen3-coder-next",
+          "seed": 303,
+          "knowledge_version": "local",
+          "data_quality_valid": true
+        },
+        {
+          "experiment_id": "EXP_CONTRACT_INTELLIGENCE",
+          "run_id": "EXP_CONTRACT_INTELLIGENCE-SCENARIO_03-ABLATION_NO_CONTRACT_INTELLIGENCE-2-7b2d9d76",
+          "scenario_id": "SCENARIO_03",
+          "configuration_id": "ABLATION_NO_CONTRACT_INTELLIGENCE",
+          "repetition_index": 2,
+          "project_id": "EXP-SCENARIO_03-ABLATION_NO_CONTRACT_INTELLIGENCE-R2-f7b486",
+          "status": "COMPLETED",
+          "configuration": "ABLATION_NO_CONTRACT_INTELLIGENCE",
+          "disabled_capabilities": [
+            "full-stack contract intelligence"
+          ],
+          "requirements": "Build an e-commerce application with products, search, cart, checkout, inventory, order creation, REST API, database persistence, frontend UI, validation, API tests, unit tests, and README.",
+          "requirement_coverage": 0.0,
+          "contract_compliance_rate": "NOT_APPLICABLE",
+          "e2e_pass_rate": 0.0,
+          "defect_count": 0,
+          "resolved_defects": 0,
+          "repair_iterations": 0,
+          "repair_resolution_rate": "NOT_APPLICABLE",
+          "tool_invocation_count": 0,
+          "qa_status": "PASS",
+          "delivery_status": "blocked",
+          "runtime_duration": "NOT_APPLICABLE",
+          "workflow_duration": 509,
+          "domain_detected": "commerce",
+          "evaluation_id": "d0d333d1-d734-43a1-8057-96b1bed0ab5e",
+          "git_commit": "c086afd7433311852aa4a25fe70038eb731c51d4",
+          "model": "qwen3-coder-next",
+          "seed": 303,
+          "knowledge_version": "local",
+          "data_quality_valid": true
+        },
+        {
+          "experiment_id": "EXP_CONTRACT_INTELLIGENCE",
+          "run_id": "EXP_CONTRACT_INTELLIGENCE-SCENARIO_03-ABLATION_NO_CONTRACT_INTELLIGENCE-3-d4038363",
+          "scenario_id": "SCENARIO_03",
+          "configuration_id": "ABLATION_NO_CONTRACT_INTELLIGENCE",
+          "repetition_index": 3,
+          "project_id": "EXP-SCENARIO_03-ABLATION_NO_CONTRACT_INTELLIGENCE-R3-f8bedd",
+          "status": "COMPLETED",
+          "configuration": "ABLATION_NO_CONTRACT_INTELLIGENCE",
+          "disabled_capabilities": [
+            "full-stack contract intelligence"
+          ],
+          "requirements": "Build an e-commerce application with products, search, cart, checkout, inventory, order creation, REST API, database persistence, frontend UI, validation, API tests, unit tests, and README.",
+          "requirement_coverage": 0.0,
+          "contract_compliance_rate": "NOT_APPLICABLE",
+          "e2e_pass_rate": 0.0,
+          "defect_count": 0,
+          "resolved_defects": 0,
+          "repair_iterations": 0,
+          "repair_resolution_rate": "NOT_APPLICABLE",
+          "tool_invocation_count": 0,
+          "qa_status": "PASS",
+          "delivery_status": "blocked",
+          "runtime_duration": "NOT_APPLICABLE",
+          "workflow_duration": 521,
+          "domain_detected": "commerce",
+          "evaluation_id": "b8cb7d13-1626-409f-a973-722c4c2e80d5",
+          "git_commit": "c086afd7433311852aa4a25fe70038eb731c51d4",
+          "model": "qwen3-coder-next",
+          "seed": 303,
+          "knowledge_version": "local",
+          "data_quality_valid": true
+        }
+      ]
+    }
+  },
+  "scenarios_executed": [
+    "SCENARIO_01",
+    "SCENARIO_02",
+    "SCENARIO_03",
+    "SCENARIO_04",
+    "SCENARIO_05"
+  ],
+  "configurations_executed": [
+    "SEAM_FULL",
+    "ABLATION_NO_DOMAIN_RAG",
+    "ABLATION_NO_AUTONOMOUS_REPAIR",
+    "ABLATION_NO_CONTRACT_INTELLIGENCE",
+    "BASELINE"
+  ],
+  "summary": {},
+  "scenario_SCENARIO_01": {
+    "run": {
+      "evaluation_id": "c8b84528-355c-4027-b6e0-8c68f65c8bd2",
+      "project_id": "EXP-SCENARIO_01-SEAM_FULL-R1-428614",
+      "scenario_id": "SCENARIO_01",
+      "start_time": "2026-10-06T22:22:45.227512+00:00",
+      "end_time": "2026-10-06T22:22:45.679232+00:00",
+      "duration_ms": 451,
+      "status": "COMPLETED",
+      "requirement_count": 7,
+      "task_count": 5,
+      "agent_count": 0,
+      "tool_invocation_count": 0,
+      "artifact_count": 0,
+      "defect_count": 0,
+      "resolved_defect_count": 0,
+      "unresolved_defect_count": 0,
+      "repair_iterations": 0,
+      "e2e_pass_rate": 1.0,
+      "contract_pass_rate": "NOT_APPLICABLE",
+      "qa_status": "PASS",
+      "delivery_status": "ready"
+    },
+    "requirements": {
+      "total_requirements": 7,
+      "analyzed_requirements": 7,
+      "planned_requirements": 5,
+      "implemented_requirements": 5,
+      "tested_requirements": 5,
+      "delivered_requirements": 5,
+      "requirement_coverage": 0.7143,
+      "traceability_evidence": [
+        {
+          "task_id": "TASK-001",
+          "requirements": [
+            "FR-001"
+          ],
+          "status": "completed"
+        },
+        {
+          "task_id": "TASK-002",
+          "requirements": [
+            "FR-002"
+          ],
+          "status": "completed"
+        },
+        {
+          "task_id": "TASK-003",
+          "requirements": [
+            "FR-003"
+          ],
+          "status": "completed"
+        },
+        {
+          "task_id": "TASK-004",
+          "requirements": [
+            "FR-004"
+          ],
+          "status": "completed"
+        },
+        {
+          "task_id": "TASK-005",
+          "requirements": [
+            "FR-005"
+          ],
+          "status": "completed"
+        }
+      ]
+    },
+    "agents": [
+      {
+        "agent": "AnalysisAgent",
+        "invocation_count": 0,
+        "success_count": 1,
+        "failure_count": 0,
+        "timeout_count": 0,
+        "average_duration_ms": "NOT_APPLICABLE",
+        "total_duration_ms": 0,
+        "rework_count": 0
+      },
+      {
+        "agent": "PlanningAgent",
+        "invocation_count": 0,
+        "success_count": 1,
+        "failure_count": 0,
+        "timeout_count": 0,
+        "average_duration_ms": "NOT_APPLICABLE",
+        "total_duration_ms": 0,
+        "rework_count": 0
+      },
+      {
+        "agent": "SupervisorAgent",
+        "invocation_count": 0,
+        "success_count": 0,
+        "failure_count": 0,
+        "timeout_count": 0,
+        "average_duration_ms": "NOT_APPLICABLE",
+        "total_duration_ms": 0,
+        "rework_count": 0
+      },
+      {
+        "agent": "CodingAgent",
+        "invocation_count": 0,
+        "success_count": 1,
+        "failure_count": 0,
+        "timeout_count": 0,
+        "average_duration_ms": "NOT_APPLICABLE",
+        "total_duration_ms": 0,
+        "rework_count": 0
+      },
+      {
+        "agent": "QAAgent",
+        "invocation_count": 0,
+        "success_count": 1,
+        "failure_count": 0,
+        "timeout_count": 0,
+        "average_duration_ms": "NOT_APPLICABLE",
+        "total_duration_ms": 0,
+        "rework_count": 0
+      },
+      {
+        "agent": "DeliveryAgent",
+        "invocation_count": 0,
+        "success_count": 1,
+        "failure_count": 0,
+        "timeout_count": 0,
+        "average_duration_ms": "NOT_APPLICABLE",
+        "total_duration_ms": 0,
+        "rework_count": 0
+      }
+    ],
+    "tools": [],
+    "qa": {
+      "static_validation_result": "PASS",
+      "contract_result": "NOT_CONFIGURED",
+      "runtime_contract_result": "NOT_CONFIGURED",
+      "frontend_validation_result": "NOT_CONFIGURED",
+      "backend_validation_result": "PASS",
+      "e2e_result": "PASS",
+      "security_result": "PASS",
+      "final_qa_status": "PASS",
+      "qa_defect_count": 0,
+      "blocker_count": 0,
+      "error_count": 0,
+      "warning_count": 0
+    },
+    "defects": {
+      "total_defects": 0,
+      "frontend_defects": 0,
+      "backend_defects": 0,
+      "api_contract_defects": 0,
+      "database_defects": 0,
+      "runtime_defects": 0,
+      "authentication_defects": 0,
+      "unknown_defects": 0
+    },
+    "repairs": {
+      "repair_plans": 0,
+      "successful_repairs": 0,
+      "failed_repairs": 0,
+      "blocked_repairs": 0,
+      "needs_review_repairs": 0,
+      "average_repair_iterations": "NOT_APPLICABLE",
+      "maximum_repair_iterations": 3,
+      "targeted_verification_pass_rate": "NOT_APPLICABLE",
+      "regression_pass_rate": "NOT_APPLICABLE",
+      "repair_resolution_rate": "NOT_APPLICABLE"
+    },
+    "e2e": {
+      "scenarios_generated": 0,
+      "scenarios_executed": 1,
+      "scenarios_passed": 1,
+      "scenarios_failed": 0,
+      "scenarios_blocked": 0,
+      "scenarios_not_configured": 0,
+      "execution_duration_ms": 0,
+      "step_failure_count": 0,
+      "e2e_pass_rate": 1.0
+    },
+    "contracts": {
+      "total_contracts": 0,
+      "static_contract_issues": 0,
+      "runtime_contract_issues": 0,
+      "resolved_contract_issues": 0,
+      "endpoint_mismatches": 0,
+      "method_mismatches": 0,
+      "request_mismatches": 0,
+      "response_mismatches": 0,
+      "database_mapping_issues": 0,
+      "contract_compliance_rate": "NOT_APPLICABLE"
+    },
+    "delivery": {
+      "release_ready": true,
+      "release_blocked": false,
+      "deployment_target": "NOT_CONFIGURED",
+      "artifact_generation": "NOT_AVAILABLE",
+      "secret_scan_result": "PASS",
+      "packaging_result": "PASS",
+      "post_deployment_verification": "NOT_CONFIGURED",
+      "rollback_availability": "NOT_CONFIGURED"
+    },
+    "performance": {
+      "total_workflow_duration_ms": 451,
+      "agent_processing_time_ms": 0,
+      "tool_execution_time_ms": 0,
+      "qa_time_ms": 0,
+      "repair_time_ms": 0,
+      "delivery_time_ms": 0,
+      "breakdown_by_stage": {
+        "Repair": 0
+      }
+    },
+    "autonomy": {
+      "user_interventions": 0,
+      "approval_requests": 0,
+      "blocked_actions": 0,
+      "manual_fixes": 0,
+      "autonomous_repair_iterations": 0,
+      "autonomous_successful_repairs": 0
+    },
+    "domain_rag": {
+      "domain_detected": "productivity",
+      "knowledge_retrieved": true,
+      "knowledge_sources_used": 1,
+      "source_types": [
+        "authoritative"
+      ],
+      "domain_specific_constraints_included": 2,
+      "domain_related_qa_issues": 0,
+      "retrieval_count": 0,
+      "retrieval_success": 0,
+      "documents_retrieved": 1,
+      "domain_retrieval_count": 1,
+      "repository_knowledge_retrieval_count": 0
+    },
+    "baseline_comparison": [],
+    "limitations": [
+      "Metrics are descriptive and depend on available ProjectState/EventStore/ArtifactRegistry evidence.",
+      "No performance improvement or causality is claimed without a recorded baseline comparison.",
+      "NOT_CONFIGURED and NOT_APPLICABLE are reported separately from failures."
+    ]
+  },
+  "scenario_SCENARIO_04": {
+    "run": {
+      "evaluation_id": "66dd5fdc-44e5-4e8c-9d3c-3a73582c64a1",
+      "project_id": "EXP-SCENARIO_04-SEAM_FULL-R1-3f31c1",
+      "scenario_id": "SCENARIO_04",
+      "start_time": "2026-10-06T22:22:46.893549+00:00",
+      "end_time": "2026-10-06T22:22:47.367718+00:00",
+      "duration_ms": 474,
+      "status": "COMPLETED",
+      "requirement_count": 5,
+      "task_count": 5,
+      "agent_count": 0,
+      "tool_invocation_count": 0,
+      "artifact_count": 0,
+      "defect_count": 0,
+      "resolved_defect_count": 0,
+      "unresolved_defect_count": 0,
+      "repair_iterations": 0,
+      "e2e_pass_rate": 1.0,
+      "contract_pass_rate": "NOT_APPLICABLE",
+      "qa_status": "PASS",
+      "delivery_status": "ready"
+    },
+    "requirements": {
+      "total_requirements": 5,
+      "analyzed_requirements": 5,
+      "planned_requirements": 5,
+      "implemented_requirements": 5,
+      "tested_requirements": 5,
+      "delivered_requirements": 5,
+      "requirement_coverage": 1.0,
+      "traceability_evidence": [
+        {
+          "task_id": "TASK-001",
+          "requirements": [
+            "FR-001"
+          ],
+          "status": "completed"
+        },
+        {
+          "task_id": "TASK-002",
+          "requirements": [
+            "FR-002"
+          ],
+          "status": "completed"
+        },
+        {
+          "task_id": "TASK-003",
+          "requirements": [
+            "FR-003"
+          ],
+          "status": "completed"
+        },
+        {
+          "task_id": "TASK-004",
+          "requirements": [
+            "FR-004"
+          ],
+          "status": "completed"
+        },
+        {
+          "task_id": "TASK-005",
+          "requirements": [
+            "FR-005"
+          ],
+          "status": "completed"
+        }
+      ]
+    },
+    "agents": [
+      {
+        "agent": "AnalysisAgent",
+        "invocation_count": 0,
+        "success_count": 1,
+        "failure_count": 0,
+        "timeout_count": 0,
+        "average_duration_ms": "NOT_APPLICABLE",
+        "total_duration_ms": 0,
+        "rework_count": 0
+      },
+      {
+        "agent": "PlanningAgent",
+        "invocation_count": 0,
+        "success_count": 1,
+        "failure_count": 0,
+        "timeout_count": 0,
+        "average_duration_ms": "NOT_APPLICABLE",
+        "total_duration_ms": 0,
+        "rework_count": 0
+      },
+      {
+        "agent": "SupervisorAgent",
+        "invocation_count": 0,
+        "success_count": 0,
+        "failure_count": 0,
+        "timeout_count": 0,
+        "average_duration_ms": "NOT_APPLICABLE",
+        "total_duration_ms": 0,
+        "rework_count": 0
+      },
+      {
+        "agent": "CodingAgent",
+        "invocation_count": 0,
+        "success_count": 1,
+        "failure_count": 0,
+        "timeout_count": 0,
+        "average_duration_ms": "NOT_APPLICABLE",
+        "total_duration_ms": 0,
+        "rework_count": 0
+      },
+      {
+        "agent": "QAAgent",
+        "invocation_count": 0,
+        "success_count": 1,
+        "failure_count": 0,
+        "timeout_count": 0,
+        "average_duration_ms": "NOT_APPLICABLE",
+        "total_duration_ms": 0,
+        "rework_count": 0
+      },
+      {
+        "agent": "DeliveryAgent",
+        "invocation_count": 0,
+        "success_count": 1,
+        "failure_count": 0,
+        "timeout_count": 0,
+        "average_duration_ms": "NOT_APPLICABLE",
+        "total_duration_ms": 0,
+        "rework_count": 0
+      }
+    ],
+    "tools": [],
+    "qa": {
+      "static_validation_result": "PASS",
+      "contract_result": "NOT_CONFIGURED",
+      "runtime_contract_result": "NOT_CONFIGURED",
+      "frontend_validation_result": "NOT_CONFIGURED",
+      "backend_validation_result": "PASS",
+      "e2e_result": "PASS",
+      "security_result": "PASS",
+      "final_qa_status": "PASS",
+      "qa_defect_count": 0,
+      "blocker_count": 0,
+      "error_count": 0,
+      "warning_count": 0
+    },
+    "defects": {
+      "total_defects": 0,
+      "frontend_defects": 0,
+      "backend_defects": 0,
+      "api_contract_defects": 0,
+      "database_defects": 0,
+      "runtime_defects": 0,
+      "authentication_defects": 0,
+      "unknown_defects": 0
+    },
+    "repairs": {
+      "repair_plans": 0,
+      "successful_repairs": 0,
+      "failed_repairs": 0,
+      "blocked_repairs": 0,
+      "needs_review_repairs": 0,
+      "average_repair_iterations": "NOT_APPLICABLE",
+      "maximum_repair_iterations": 3,
+      "targeted_verification_pass_rate": "NOT_APPLICABLE",
+      "regression_pass_rate": "NOT_APPLICABLE",
+      "repair_resolution_rate": "NOT_APPLICABLE"
+    },
+    "e2e": {
+      "scenarios_generated": 0,
+      "scenarios_executed": 1,
+      "scenarios_passed": 1,
+      "scenarios_failed": 0,
+      "scenarios_blocked": 0,
+      "scenarios_not_configured": 0,
+      "execution_duration_ms": 0,
+      "step_failure_count": 0,
+      "e2e_pass_rate": 1.0
+    },
+    "contracts": {
+      "total_contracts": 0,
+      "static_contract_issues": 0,
+      "runtime_contract_issues": 0,
+      "resolved_contract_issues": 0,
+      "endpoint_mismatches": 0,
+      "method_mismatches": 0,
+      "request_mismatches": 0,
+      "response_mismatches": 0,
+      "database_mapping_issues": 0,
+      "contract_compliance_rate": "NOT_APPLICABLE"
+    },
+    "delivery": {
+      "release_ready": true,
+      "release_blocked": false,
+      "deployment_target": "NOT_CONFIGURED",
+      "artifact_generation": "NOT_AVAILABLE",
+      "secret_scan_result": "PASS",
+      "packaging_result": "PASS",
+      "post_deployment_verification": "NOT_CONFIGURED",
+      "rollback_availability": "NOT_CONFIGURED"
+    },
+    "performance": {
+      "total_workflow_duration_ms": 474,
+      "agent_processing_time_ms": 0,
+      "tool_execution_time_ms": 0,
+      "qa_time_ms": 0,
+      "repair_time_ms": 0,
+      "delivery_time_ms": 0,
+      "breakdown_by_stage": {
+        "Repair": 0
+      }
+    },
+    "autonomy": {
+      "user_interventions": 0,
+      "approval_requests": 0,
+      "blocked_actions": 0,
+      "manual_fixes": 0,
+      "autonomous_repair_iterations": 0,
+      "autonomous_successful_repairs": 0
+    },
+    "domain_rag": {
+      "domain_detected": "travel",
+      "knowledge_retrieved": true,
+      "knowledge_sources_used": 1,
+      "source_types": [
+        "authoritative"
+      ],
+      "domain_specific_constraints_included": 2,
+      "domain_related_qa_issues": 0,
+      "retrieval_count": 0,
+      "retrieval_success": 0,
+      "documents_retrieved": 1,
+      "domain_retrieval_count": 1,
+      "repository_knowledge_retrieval_count": 0
+    },
+    "baseline_comparison": [],
+    "limitations": [
+      "Metrics are descriptive and depend on available ProjectState/EventStore/ArtifactRegistry evidence.",
+      "No performance improvement or causality is claimed without a recorded baseline comparison.",
+      "NOT_CONFIGURED and NOT_APPLICABLE are reported separately from failures."
+    ]
+  }
+}

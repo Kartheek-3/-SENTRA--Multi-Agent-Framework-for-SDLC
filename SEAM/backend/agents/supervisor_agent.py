@@ -33,6 +33,20 @@ class SupervisorAgent:
             self._write_supervisor_artifacts(state, "Planning required before coding.")
             return state
             
+        # 2b. Approval Gate for Enhance Existing Project workflow (Phase 3)
+        if state.is_enhance_workflow and not state.enhancement_approved:
+            state.workflow_status = "waiting_for_approval"
+            state.approval_status = "pending"
+            state.current_agent = "APPROVAL_GATE"
+            from backend.events import event_bus
+            event_bus.emit_sync("ENHANCEMENT_APPROVAL_REQUIRED", {
+                "project_id": state.project_id,
+                "plan_summary": (state.enhancement_plan or {}).get("summary", "Enhancement plan awaits user review."),
+                "status": "pending_approval"
+            })
+            self._write_supervisor_artifacts(state, "Enhancement plan awaits user review and approval before workspace modification.")
+            return state
+
         # 3. Tasks Execution (Coding <-> QA)
         pending_tasks = [t for t_id, t in state.tasks.items() if t.status == "pending"]
         in_progress_tasks = [t for t_id, t in state.tasks.items() if t.status == "in_progress"]

@@ -163,6 +163,9 @@ class ModelRouter:
         local_available = self.model_available(local_model) or local_in_dmr
         local_status = "VERIFIED" if local_available else "LOCAL_MODEL_NOT_AVAILABLE"
 
+        active_local = self._get_safe_model_name(SEAM_LLM_MODEL, "coding")
+        active_available = self.model_available(active_local)
+
         return {
             "provider": self.provider,
             "primary_model": SEAM_LLM_MODEL,
@@ -179,20 +182,101 @@ class ModelRouter:
             "docker_model_runner_version": dmr_health.get("version"),
             "configured": configured,
             "available_models": self.available_models,
+            "installed_local_models": self.available_models,
+            "active_local_model": active_local,
+            "active_local_available": active_available,
             "qwen3_coder_next_available": self.model_available("qwen3-coder-next"),
             "qwen3_8_flash_next_available": high_tier_in_runner,
             "qwen3_4b_available": local_available,
+            "qwen2_5_coder_1_5b_available": self.model_available("qwen2.5-coder:1.5b"),
             "primary_model_available": self.model_available(SEAM_LLM_MODEL),
         }
 
     def verify_local_model_readiness(self, model_name: Optional[str] = None) -> Dict[str, Any]:
-        """Verifies actual inference execution on the local fallback model in Docker Model Runner.
+        """Verifies actual live inference execution on the local model in Ollama or Docker Model Runner.
         
-        HTTP 200 from /v1/models is NOT sufficient to report inference readiness.
-        If model is missing from DMR or pull is incomplete, reports LOCAL_MODEL_NOT_AVAILABLE
-        and provides the exact pull command.
-        Only reports PASS when actual tokens are generated via real inference.
+        HTTP 200 from /v1/models or /api/tags is NOT sufficient to report inference readiness.
+        If model is missing from provider, reports LOCAL_MODEL_NOT_AVAILABLE and provides pull command.
+        Only reports PASS when actual tokens are generated via real inference with measured latency.
         """
+        import time
+
+        if self.provider == "ollama" and (not model_name or not str(model_name).startswith("ai/")):
+            target_model = model_name or (self.available_models[0] if self.available_models else "qwen2.5-coder:1.5b")
+            pull_cmd = f"ollama pull {target_model}"
+
+            ollama_health = self.probe_ollama_health()
+            if not ollama_health.get("available", False):
+                return {
+                    "status": "LOCAL_MODEL_NOT_AVAILABLE",
+                    "model": target_model,
+                    "provider": "ollama",
+                    "readiness": "NOT_AVAILABLE",
+                    "reason": f"Ollama endpoint {self.ollama_base_url} is unreachable.",
+                    "pull_command": pull_cmd,
+                    "inference_verified": False,
+                }
+
+            if not self.model_available(target_model):
+                return {
+                    "status": "LOCAL_MODEL_NOT_AVAILABLE",
+                    "model": target_model,
+                    "provider": "ollama",
+                    "readiness": "NOT_AVAILABLE",
+                    "reason": f"Model '{target_model}' is not installed in Ollama.",
+                    "pull_command": pull_cmd,
+                    "inference_verified": False,
+                }
+
+            t0 = time.time()
+            try:
+                chat = ChatOllama(
+                    model=target_model,
+                    base_url=self.ollama_base_url,
+                    temperature=0.1,
+                    timeout=MODEL_REQUEST_TIMEOUT,
+                )
+                response = chat.invoke("Ping")
+                latency_ms = int((time.time() - t0) * 1000)
+                content = response.content if hasattr(response, "content") else str(response)
+
+                if not content or not content.strip():
+                    return {
+                        "status": "INFERENCE_FAILED",
+                        "model": target_model,
+                        "provider": "ollama",
+                        "readiness": "FAILED",
+                        "reason": "Real inference returned empty response.",
+                        "pull_command": pull_cmd,
+                        "inference_verified": False,
+                        "latency_ms": latency_ms,
+                    }
+
+                return {
+                    "status": "PASS",
+                    "model": target_model,
+                    "provider": "ollama",
+                    "readiness": "PASS",
+                    "reason": "Real inference verified successfully on Ollama.",
+                    "pull_command": pull_cmd,
+                    "inference_verified": True,
+                    "latency_ms": latency_ms,
+                    "response_sample": content.strip()[:60],
+                }
+            except Exception as exc:
+                latency_ms = int((time.time() - t0) * 1000)
+                return {
+                    "status": "INFERENCE_FAILED",
+                    "model": target_model,
+                    "provider": "ollama",
+                    "readiness": "FAILED",
+                    "reason": f"Real inference execution error: {str(exc)}",
+                    "pull_command": pull_cmd,
+                    "inference_verified": False,
+                    "latency_ms": latency_ms,
+                }
+
+        # Otherwise Docker Model Runner
         target_model = model_name or self.hardware_profile.get("recommended_local_model", SEAM_LOCAL_MODEL)
         pull_cmd = f"docker model pull {target_model}"
 
@@ -202,6 +286,7 @@ class ModelRouter:
             return {
                 "status": "LOCAL_MODEL_NOT_AVAILABLE",
                 "model": target_model,
+                "provider": "docker",
                 "readiness": "NOT_AVAILABLE",
                 "reason": f"Docker Model Runner endpoint {self.dmr_base_url} is unreachable.",
                 "pull_command": pull_cmd,
@@ -214,6 +299,7 @@ class ModelRouter:
             return {
                 "status": "LOCAL_MODEL_NOT_AVAILABLE",
                 "model": target_model,
+                "provider": "docker",
                 "readiness": "NOT_AVAILABLE",
                 "reason": f"Model '{target_model}' is not loaded in Docker Model Runner.",
                 "pull_command": pull_cmd,
@@ -221,7 +307,6 @@ class ModelRouter:
             }
 
         # 3. Perform real inference test (HTTP 200 from /v1/models is NOT sufficient)
-        import time
         t0 = time.time()
         try:
             from langchain_openai import ChatOpenAI
@@ -241,6 +326,7 @@ class ModelRouter:
                 return {
                     "status": "INFERENCE_FAILED",
                     "model": target_model,
+                    "provider": "docker",
                     "readiness": "FAILED",
                     "reason": "Real inference returned empty response.",
                     "pull_command": pull_cmd,
@@ -251,6 +337,7 @@ class ModelRouter:
             return {
                 "status": "PASS",
                 "model": target_model,
+                "provider": "docker",
                 "readiness": "PASS",
                 "reason": "Real inference verified successfully.",
                 "pull_command": pull_cmd,
@@ -263,6 +350,7 @@ class ModelRouter:
             return {
                 "status": "INFERENCE_FAILED",
                 "model": target_model,
+                "provider": "docker",
                 "readiness": "FAILED",
                 "reason": f"Real inference execution error: {str(exc)}",
                 "pull_command": pull_cmd,
@@ -300,6 +388,8 @@ class ModelRouter:
         elif SEAM_LEGACY_MODEL in self.available_models or f"{SEAM_LEGACY_MODEL}:latest" in self.available_models:
             logger.warning(f"Fallback model {SEAM_FALLBACK_MODEL} not found. Trying legacy {SEAM_LEGACY_MODEL}")
             fallback_target = SEAM_LEGACY_MODEL
+        elif "qwen2.5-coder:1.5b" in self.available_models:
+            fallback_target = "qwen2.5-coder:1.5b"
         elif self.available_models:
             fallback_target = self.available_models[0]
         else:
@@ -478,40 +568,47 @@ class ModelRouter:
         actual = self._get_safe_model_name(requested, task_type)
 
         from backend.events import event_bus
-        event_bus.emit_sync("MODEL_EXECUTION_STARTED", {
+        start_payload = {
             "correlation_id": correlation_id,
             "task_type": task_type,
             "requested_model": requested,
             "actual_model": actual,
             "provider": self.provider,
             "timestamp": datetime.datetime.now().isoformat(),
-        })
+        }
+        event_bus.emit_sync("MODEL_REQUEST_STARTED", start_payload)
+        event_bus.emit_sync("MODEL_EXECUTION_STARTED", start_payload)
 
         t0 = time.time()
         try:
             if actual != requested:
-                event_bus.emit_sync("MODEL_EXECUTION_FAILED", {
+                fail_prep_payload = {
                     "correlation_id": correlation_id,
                     "task_type": task_type,
                     "model": requested,
                     "error": f"High-tier model '{requested}' unavailable on current hardware ({self.hardware_profile.get('profile', 'UNKNOWN')})",
                     "fallback_target": actual,
                     "timestamp": datetime.datetime.now().isoformat(),
-                })
+                }
+                event_bus.emit_sync("MODEL_REQUEST_FAILED", fail_prep_payload)
+                event_bus.emit_sync("MODEL_EXECUTION_FAILED", fail_prep_payload)
 
             chat_model = self.get_model(task_type=task_type)
             res = chat_model.invoke(prompt)
             latency_ms = int((time.time() - t0) * 1000)
             content = res.content if hasattr(res, "content") else str(res)
 
-            event_bus.emit_sync("MODEL_EXECUTION_COMPLETED", {
+            comp_payload = {
                 "correlation_id": correlation_id,
                 "task_type": task_type,
                 "model": actual,
+                "actual_model": actual,
                 "latency_ms": latency_ms,
                 "status": "success",
                 "timestamp": datetime.datetime.now().isoformat(),
-            })
+            }
+            event_bus.emit_sync("MODEL_REQUEST_COMPLETED", comp_payload)
+            event_bus.emit_sync("MODEL_EXECUTION_COMPLETED", comp_payload)
 
             record = self.record_execution(
                 task_type=task_type,
@@ -531,13 +628,16 @@ class ModelRouter:
             }
         except Exception as exc:
             latency_ms = int((time.time() - t0) * 1000)
-            event_bus.emit_sync("MODEL_EXECUTION_FAILED", {
+            fail_payload = {
                 "correlation_id": correlation_id,
                 "task_type": task_type,
                 "model": actual,
+                "actual_model": actual,
                 "error": str(exc),
                 "timestamp": datetime.datetime.now().isoformat(),
-            })
+            }
+            event_bus.emit_sync("MODEL_REQUEST_FAILED", fail_payload)
+            event_bus.emit_sync("MODEL_EXECUTION_FAILED", fail_payload)
             self.record_execution(
                 task_type=task_type,
                 model=actual,

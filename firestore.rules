@@ -1,0 +1,60 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    // User Profile: users/{userId}
+    match /users/{userId} {
+      allow read: if isOwner(userId);
+      allow create: if isOwner(userId)
+                    && request.resource.data.keys().hasAll(['uid', 'email', 'createdAt'])
+                    && request.resource.data.uid == userId;
+      allow update: if isOwner(userId)
+                    && request.resource.data.uid == userId;
+      allow delete: if false; // Profiles cannot be arbitrarily deleted from client
+
+      // User Projects Subcollection: users/{userId}/projects/{projectId}
+      match /projects/{projectId} {
+        allow read, write: if isOwner(userId);
+
+        // Project settings, preferences, files, events, artifacts
+        match /settings/{document} {
+          allow read, write: if isOwner(userId);
+        }
+        match /preferences/{document} {
+          allow read, write: if isOwner(userId);
+        }
+        match /files/{fileId} {
+          allow read, write: if isOwner(userId);
+        }
+        match /events/{eventId} {
+          allow read, write: if isOwner(userId);
+        }
+        match /artifacts/{artifactId} {
+          allow read, write: if isOwner(userId);
+        }
+        match /experiments/{experimentId} {
+          allow read, write: if isOwner(userId);
+        }
+      }
+
+      // User Global UI Preferences: users/{userId}/preferences/{doc}
+      match /preferences/{doc} {
+        allow read, write: if isOwner(userId);
+      }
+    }
+
+    // Explicit deny all other paths
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

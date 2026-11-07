@@ -20,8 +20,11 @@ export type CreateProjectInput = {
   requirement: string;
   scale: string;
   technology_preferences: string[];
+  technology_stack?: Record<string, string>;
   workspace_location?: string;
   github_repository?: string;
+  github_branch?: string;
+  workflow_type?: 'new_project' | 'enhance_existing';
   additional_constraints?: string;
 };
 
@@ -84,6 +87,48 @@ export const seamApi = {
       body: JSON.stringify(input),
     });
   },
+  connectGithub(repo_url: string, branch = 'main') {
+    return request<{
+      status: string;
+      connected: boolean;
+      owner: string;
+      name: string;
+      url: string;
+      default_branch: string;
+      selected_branch: string;
+      commit_sha: string;
+      is_private?: boolean;
+      stars?: number;
+      language?: string;
+      detail?: string;
+    }>('/api/github/connect', {
+      method: 'POST',
+      body: JSON.stringify({ repo_url, branch }),
+    });
+  },
+  githubStatus() {
+    return request<{ status: string; has_token: boolean; token_configured: boolean }>('/api/github/status');
+  },
+  approveEnhancement(projectId: string) {
+    return request<{ status: string; project_id: string }>(`/api/projects/${projectId}/approve_enhancement`, {
+      method: 'POST',
+    });
+  },
+  rejectEnhancement(projectId: string, reason?: string) {
+    return request<{ status: string; project_id: string }>(`/api/projects/${projectId}/reject_enhancement`, {
+      method: 'POST',
+      body: JSON.stringify({ reason }),
+    });
+  },
+  getProjectUnderstanding(projectId: string) {
+    return request<{ project_id: string; understanding: any; profile: any }>(`/api/projects/${projectId}/understanding`);
+  },
+  getEnhancementPlan(projectId: string) {
+    return request<{ project_id: string; enhancement_plan: any; approved: boolean; approval_status: string }>(`/api/projects/${projectId}/enhancement_plan`);
+  },
+  getEnhancementDiff(projectId: string) {
+    return request<{ project_id: string; diff: string; targeted_changes: any[] }>(`/api/projects/${projectId}/diff`);
+  },
   projectStatus(projectId: string) {
     return request<any>(`/api/projects/${projectId}/status`);
   },
@@ -101,6 +146,11 @@ export const seamApi = {
   },
   diagram(projectId: string, type: string) {
     return request<any>(`/api/projects/${projectId}/diagrams/${encodeURIComponent(type)}`);
+  },
+  regenerateDiagram(projectId: string, type: string) {
+    return request<any>(`/api/projects/${projectId}/diagrams/${encodeURIComponent(type)}/regenerate`, {
+      method: 'POST',
+    });
   },
   searchKnowledge(query: string, category = '') {
     return request<any>('/api/knowledge/search', {
@@ -144,5 +194,55 @@ export const seamApi = {
       method: 'DELETE',
       body: JSON.stringify({ path }),
     });
+  },
+  imageCapabilities() {
+    return request<{
+      status: string;
+      reason?: string;
+      host_os: string;
+      has_cuda: boolean;
+      gpu_info: string;
+      dmr_available: boolean;
+      dmr_base_url: string;
+      dmr_version?: string;
+      installed_models: string[];
+      diffusers_supported_on_host: boolean;
+      model_installed: boolean;
+      supported_providers: Array<{ id: string; name: string; status: string; reason?: string; supported: boolean }>;
+      explanation: string;
+    }>('/api/images/capabilities');
+  },
+  generateImage(input: {
+    project_id: string;
+    prompt: string;
+    image_purpose?: string;
+    width?: number;
+    height?: number;
+    model?: string;
+    negative_prompt?: string;
+  }) {
+    return request<{
+      status: string;
+      provider: string;
+      model: string;
+      artifact_id?: string;
+      artifact_path?: string;
+      generation_method: string;
+      image_url?: string;
+      image_base64?: string;
+      metadata: Record<string, any>;
+      error?: string;
+      message?: string;
+    }>('/api/images/generate', {
+      method: 'POST',
+      body: JSON.stringify(input),
+    });
+  },
+  listProjectVisualAssets(projectId: string) {
+    return request<{
+      project_id: string;
+      count: number;
+      visual_assets: any[];
+    }>(`/api/images/gallery/${encodeURIComponent(projectId)}`);
   },
 };

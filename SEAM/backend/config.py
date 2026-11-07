@@ -1,3 +1,4 @@
+
 import os
 import sys
 from dotenv import load_dotenv
@@ -63,3 +64,9 @@ if not FIGMA_ACCESS_TOKEN and sys.platform == "win32":
     except Exception:
         pass
 FIGMA_SEAM_FILE_KEY = os.getenv("FIGMA_SEAM_FILE_KEY", "")
+
+# Docker Model Runner Image Generation Configuration (Phase 5)
+DMR_BASE_URL = os.getenv("DMR_BASE_URL", DOCKER_MODEL_RUNNER_BASE_URL)
+SEAM_SDXL_MODEL = os.getenv("SEAM_SDXL_MODEL", "ai/stable-diffusion")
+SEAM_IMAGE_TIMEOUT_SECONDS = int(os.getenv("SEAM_IMAGE_TIMEOUT_SECONDS", "180"))
+SEAM_IMAGE_MAX_PROMPT_LENGTH = int(os.getenv("SEAM_IMAGE_MAX_PROMPT_LENGTH", "1000"))

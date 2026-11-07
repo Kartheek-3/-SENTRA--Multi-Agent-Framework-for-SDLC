@@ -92,7 +92,10 @@ class QAAgent:
             self._log_error(state, agent_name, f"Cannot QA task {task_id}: Task is not completed or missing result.", start_time)
             return state
             
-        project_dir = os.path.join("generated_projects", state.project_name)
+        if state.is_enhance_workflow and state.repo_workspace_path:
+            project_dir = state.repo_workspace_path
+        else:
+            project_dir = os.path.join("generated_projects", state.project_name)
         generated_files = task.result.get("files", [])
         
         syntax_errors = []

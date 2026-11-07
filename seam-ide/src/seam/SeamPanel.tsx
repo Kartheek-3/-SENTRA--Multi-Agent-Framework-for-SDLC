@@ -310,18 +310,71 @@ function Timeline({ state }: { state: any }) {
 }
 
 function NewProject({ onCreateProject }: { onCreateProject: (input: any) => Promise<void> }) {
-  const [form, setForm] = useState({ project_name: '', requirement: '', scale: 'AUTO', technology_preferences: '', workspace_location: '', github_repository: '', additional_constraints: '' });
+  const [workflowMode, setWorkflowMode] = useState<'new_project' | 'enhance_existing'>('new_project');
+  const [form, setForm] = useState({
+    project_name: '',
+    requirement: '',
+    scale: 'AUTO',
+    technology_preferences: '',
+    workspace_location: '',
+    github_repository: '',
+    github_branch: 'main',
+    additional_constraints: ''
+  });
   const update = (key: string, value: string) => setForm(current => ({ ...current, [key]: value }));
+
   return (
     <div className="newProjectCard">
-      <label>Project Name<input value={form.project_name} onChange={event => update('project_name', event.target.value)} /></label>
-      <label>Requirements<textarea rows={5} value={form.requirement} onChange={event => update('requirement', event.target.value)} /></label>
-      <div className="twoCol">
-        <label>Scale<select value={form.scale} onChange={event => update('scale', event.target.value)}>{['AUTO', 'SMALL', 'MEDIUM', 'LARGE', 'ENTERPRISE'].map(item => <option key={item}>{item}</option>)}</select></label>
-        <label>Technology<input value={form.technology_preferences} onChange={event => update('technology_preferences', event.target.value)} placeholder="FastAPI, React" /></label>
+      <div style={{ display: 'flex', gap: '8px', marginBottom: '14px', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '8px' }}>
+        <button
+          type="button"
+          className={`tabButton ${workflowMode === 'new_project' ? 'active' : ''}`}
+          style={{ padding: '6px 12px', background: workflowMode === 'new_project' ? '#3b82f6' : 'transparent', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 600 }}
+          onClick={() => setWorkflowMode('new_project')}
+        >
+          Workflow A: Create New Project
+        </button>
+        <button
+          type="button"
+          className={`tabButton ${workflowMode === 'enhance_existing' ? 'active' : ''}`}
+          style={{ padding: '6px 12px', background: workflowMode === 'enhance_existing' ? '#3b82f6' : 'transparent', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 600 }}
+          onClick={() => setWorkflowMode('enhance_existing')}
+        >
+          Workflow B: Enhance Existing Project
+        </button>
       </div>
-      <label>GitHub Repository<input value={form.github_repository} onChange={event => update('github_repository', event.target.value)} placeholder="optional" /></label>
-      <button disabled={!form.project_name.trim() || !form.requirement.trim()} onClick={() => onCreateProject({ ...form, technology_preferences: form.technology_preferences.split(',').map(item => item.trim()).filter(Boolean) })}>Start Conversation</button>
+
+      {workflowMode === 'new_project' ? (
+        <>
+          <label>Project Name<input value={form.project_name} onChange={event => update('project_name', event.target.value)} placeholder="e.g. cloud-orchestrator" /></label>
+          <label>Requirements<textarea rows={5} value={form.requirement} onChange={event => update('requirement', event.target.value)} placeholder="Describe what you want to build from scratch..." /></label>
+          <div className="twoCol">
+            <label>Scale<select value={form.scale} onChange={event => update('scale', event.target.value)}>{['AUTO', 'SMALL', 'MEDIUM', 'LARGE', 'ENTERPRISE'].map(item => <option key={item}>{item}</option>)}</select></label>
+            <label>Technology<input value={form.technology_preferences} onChange={event => update('technology_preferences', event.target.value)} placeholder="FastAPI, React" /></label>
+          </div>
+          <button disabled={!form.project_name.trim() || !form.requirement.trim()} onClick={() => onCreateProject({ ...form, workflow_type: 'new_project', technology_preferences: form.technology_preferences.split(',').map(item => item.trim()).filter(Boolean) })}>Create New Project</button>
+        </>
+      ) : (
+        <>
+          <label>GitHub Repository URL / Slug<input value={form.github_repository} onChange={event => update('github_repository', event.target.value)} placeholder="https://github.com/owner/repository or owner/repo" /></label>
+          <div className="twoCol">
+            <label>Project Name<input value={form.project_name} onChange={event => update('project_name', event.target.value)} placeholder="e.g. repo-enhancement" /></label>
+            <label>Branch<input value={form.github_branch} onChange={event => update('github_branch', event.target.value)} placeholder="main" /></label>
+          </div>
+          <label>Enhancement Goal<textarea rows={4} value={form.requirement} onChange={event => update('requirement', event.target.value)} placeholder="Describe what you want to analyze, improve, or add to this existing codebase..." /></label>
+          <button
+            disabled={!form.github_repository.trim() || !form.project_name.trim() || !form.requirement.trim()}
+            style={{ background: '#10b981' }}
+            onClick={() => onCreateProject({
+              ...form,
+              workflow_type: 'enhance_existing',
+              technology_preferences: form.technology_preferences.split(',').map(item => item.trim()).filter(Boolean)
+            })}
+          >
+            Connect & Enhance Repository
+          </button>
+        </>
+      )}
     </div>
   );
 }

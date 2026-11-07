@@ -1,0 +1,76 @@
+{
+  "preset_modern_fullstack": {
+    "status": "PASS",
+    "project_id": "f860df2d-ed35-4221-b13c-e9ab9b093877",
+    "project_name": "audit-modern-fullstack",
+    "target_dir": "C:/Users/Windows 11/Downloads/SEAM1/SEAM/generated_projects/audit_modern_fullstack",
+    "technology_stack": {
+      "language": "Python 3.12",
+      "frontend": "React 18 (Vite, TS)",
+      "backend": "FastAPI (Async)",
+      "database": "SQLite 3 (WAL)",
+      "styling": "Tailwind CSS 3.4",
+      "auth": "JWT Bearer Token",
+      "build_tool": "npm & pip"
+    },
+    "children_count": 1,
+    "has_stack_in_state": true
+  },
+  "preset_python_api": {
+    "status": "PASS",
+    "project_id": "c3c57561-7988-47fb-97e3-38e8f50b71ff",
+    "project_name": "audit-python-api",
+    "target_dir": "C:/Users/Windows 11/Downloads/SEAM1/SEAM/generated_projects/audit_python_api",
+    "technology_stack": {
+      "language": "Python 3.12",
+      "frontend": "None",
+      "backend": "FastAPI (Async)",
+      "database": "SQLite 3 (WAL)",
+      "styling": "None",
+      "auth": "API Key / Bearer",
+      "build_tool": "pip & poetry"
+    },
+    "children_count": 1,
+    "has_stack_in_state": true
+  },
+  "preset_ts_fullstack": {
+    "status": "PASS",
+    "project_id": "63946142-4b8d-4c75-8a43-6d2efd164e80",
+    "project_name": "audit-ts-fullstack",
+    "target_dir": "C:/Users/Windows 11/Downloads/SEAM1/SEAM/generated_projects/audit_ts_fullstack",
+    "technology_stack": {
+      "language": "TypeScript 5.4",
+      "frontend": "React 18 (Vite, TS)",
+      "backend": "Express.js (Node)",
+      "database": "SQLite 3",
+      "styling": "Vanilla CSS",
+      "auth": "Session Cookies",
+      "build_tool": "npm (Node 20+)"
+    },
+    "children_count": 1,
+    "has_stack_in_state": true
+  },
+  "preset_lightweight_web": {
+    "status": "PASS",
+    "project_id": "fc91c798-4eb2-4474-92d9-a02c22dab454",
+    "project_name": "audit-lightweight-web",
+    "target_dir": "C:/Users/Windows 11/Downloads/SEAM1/SEAM/generated_projects/audit_lightweight_web",
+    "technology_stack": {
+      "language": "Python 3.12",
+      "frontend": "Vanilla HTML5 / Modern CSS",
+      "backend": "FastAPI (Async)",
+      "database": "SQLite 3",
+      "styling": "Vanilla CSS",
+      "auth": "None",
+      "build_tool": "pip"
+    },
+    "children_count": 1,
+    "has_stack_in_state": true
+  },
+  "workflow_b": {
+    "status": "PASS",
+    "project_id": "c98e416b-bbfb-45b7-9366-c35a2ab15e9e",
+    "approval_status": "approved",
+    "rejection_status": "rejected"
+  }
+}

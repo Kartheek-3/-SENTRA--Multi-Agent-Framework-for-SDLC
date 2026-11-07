@@ -150,7 +150,7 @@ export function TerminalSessionSelector({
         <div className="terminalContentArea">
           {panelTab === 'TERMINAL' && (
             <div className="terminalShellView scrollArea">
-              {/* Default Mock / Live Vite Server startup banner from Figma */}
+              {/* Default Live Vite Server startup banner from Figma */}
               <div className="terminalOutputLine prompt">
                 ➜ seam-workspace git:(feature/final-hardening) npm run dev
               </div>

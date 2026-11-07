@@ -12,13 +12,44 @@ router = APIRouter(prefix="/api/projects", tags=["projects"])
 # Global DB mock
 projects_db: Dict[str, ProjectState] = {}
 
+def get_project_state(project_id: str) -> ProjectState:
+    if project_id not in projects_db:
+        try:
+            from backend.database import db_engine
+            stored = db_engine.get_project(project_id)
+            if stored and stored.get("state"):
+                projects_db[project_id] = ProjectState(**stored["state"])
+        except Exception:
+            pass
+    if project_id not in projects_db:
+        raise HTTPException(status_code=404, detail="Project not found")
+    return projects_db[project_id]
+
+def save_project_state(state: ProjectState) -> None:
+    projects_db[state.project_id] = state
+    try:
+        from backend.database import db_engine
+        db_engine.save_project(
+            project_id=state.project_id,
+            project_name=state.project_name,
+            domain=state.domain or state.project_name,
+            user_requirement=state.user_requirement,
+            state_dict=state.model_dump(),
+            workflow_status=state.workflow_status
+        )
+    except Exception:
+        pass
+
 class CreateProjectRequest(BaseModel):
     project_name: str
     requirement: str
     scale: str = "AUTO"
     technology_preferences: List[str] = []
+    technology_stack: Optional[Dict[str, Any]] = None
     workspace_location: Optional[str] = None
     github_repository: Optional[str] = None
+    github_branch: Optional[str] = "main"
+    workflow_type: str = "new_project"  # "new_project" or "enhance_existing"
     additional_constraints: Optional[str] = None
 
 @router.post("")
@@ -30,6 +61,10 @@ def create_project(request: CreateProjectRequest):
         metadata_parts.append(f"Requested scale: {request.scale}")
     if request.technology_preferences:
         metadata_parts.append(f"Technology preferences: {', '.join(request.technology_preferences)}")
+    if request.technology_stack:
+        active_stack = [f"{k}: {v}" for k, v in request.technology_stack.items() if v and v != "None"]
+        if active_stack:
+            metadata_parts.append(f"Configured Technology Stack: {', '.join(active_stack)}")
     if request.github_repository:
         metadata_parts.append(f"GitHub repository: {request.github_repository}")
     if request.additional_constraints:
@@ -40,8 +75,23 @@ def create_project(request: CreateProjectRequest):
     state = ProjectState(
         project_id=project_id,
         user_requirement=requirement,
-        domain=request.project_name
+        domain=request.project_name,
+        workflow_type=request.workflow_type or "new_project",
+        repo_url=request.github_repository,
+        repo_branch=request.github_branch or "main",
+        technology_stack=request.technology_stack or {},
     )
+    
+    if request.technology_stack:
+        fw = request.technology_stack.get("frontend")
+        if fw and fw != "None":
+            state.frontend_capabilities = {
+                "framework": fw,
+                "language": request.technology_stack.get("language", "TypeScript"),
+                "build_system": request.technology_stack.get("build_tool", "Vite"),
+                "styling": request.technology_stack.get("styling", "TailwindCSS"),
+                "auth": request.technology_stack.get("auth", "JWT"),
+            }
     
     projects_db[project_id] = state
     try:
@@ -123,18 +173,7 @@ def list_projects():
 
 @router.get("/{project_id}/status")
 def get_project_status(project_id: str):
-    if project_id not in projects_db:
-        try:
-            from backend.database import db_engine
-            stored = db_engine.get_project(project_id)
-            if stored and stored.get("state"):
-                projects_db[project_id] = ProjectState(**stored["state"])
-        except Exception:
-            pass
-    if project_id not in projects_db:
-        raise HTTPException(status_code=404, detail="Project not found")
-        
-    state = projects_db[project_id]
+    state = get_project_state(project_id)
     
     analysis = state.structured_requirements.model_dump() if state.structured_requirements else None
     plan = state.project_plan.model_dump() if state.project_plan else None
@@ -218,14 +257,12 @@ def get_project_status(project_id: str):
         "experiment_summary": state.experiment_summary,
         "delivery_result": delivery,
         "agent_status": agent_status,
+        "technology_stack": state.technology_stack,
     }
 
 @router.get("/{project_id}/evaluation")
 def get_project_evaluation(project_id: str):
-    if project_id not in projects_db:
-        raise HTTPException(status_code=404, detail="Project not found")
-
-    state = projects_db[project_id]
+    state = get_project_state(project_id)
     if not state.evaluation_summary:
         from backend.evaluation import EvaluationEngine
         EvaluationEngine().evaluate(state, scenario_id=state.domain or state.project_id)
@@ -236,10 +273,7 @@ def get_project_evaluation(project_id: str):
 
 @router.get("/{project_id}/repositories")
 def get_project_repositories(project_id: str):
-    if project_id not in projects_db:
-        raise HTTPException(status_code=404, detail="Project not found")
-        
-    state = projects_db[project_id]
+    state = get_project_state(project_id)
     if not state.github_selection:
         return {"has_selection": False, "selection": None}
         
@@ -250,58 +284,197 @@ def get_project_repositories(project_id: str):
 
 @router.get("/{project_id}/diagrams")
 def get_diagrams(project_id: str):
-    if project_id not in projects_db:
-        raise HTTPException(status_code=404, detail="Project not found")
-        
-    state = projects_db[project_id]
+    state = get_project_state(project_id)
     diagrams_dir = os.path.abspath(os.path.join("generated_projects", state.project_name, "design", "diagrams"))
+    source_dir = os.path.abspath(os.path.join("generated_projects", state.project_name, "design", "diagram_source"))
     
-    if not os.path.exists(diagrams_dir):
-        return {"diagrams": []}
-        
-    diagrams = []
-    for f in os.listdir(diagrams_dir):
-        if f.endswith(".png"):
-            diagrams.append(f.replace(".png", ""))
+    from backend.tools.diagram_templates import normalize_diagram_identifier
+
+    diagrams = set()
+    raw_files = []
+    if os.path.exists(diagrams_dir):
+        for f in os.listdir(diagrams_dir):
+            if f.endswith(".png"):
+                raw_files.append(f.replace(".png", ""))
+
+    if os.path.exists(source_dir):
+        for f in os.listdir(source_dir):
+            if f.endswith(".json"):
+                raw_files.append(f.replace(".json", ""))
+
+    for stem in raw_files:
+        norm = normalize_diagram_identifier(stem)
+        if norm:
+            diagrams.add(norm["id"])
+            diagrams.add(norm["canonical_name"])
+        else:
+            diagrams.add(stem)
             
-    return {"diagrams": diagrams}
+    return {"diagrams": sorted(list(diagrams))}
 
 @router.get("/{project_id}/diagrams/{diagram_type}")
 def get_diagram(project_id: str, diagram_type: str):
-    if project_id not in projects_db:
-        raise HTTPException(status_code=404, detail="Project not found")
-        
-    state = projects_db[project_id]
+    state = get_project_state(project_id)
     diagrams_dir = os.path.abspath(os.path.join("generated_projects", state.project_name, "design", "diagram_source"))
-    diagram_path = os.path.abspath(os.path.join(diagrams_dir, f"{slugify(diagram_type)}.json"))
+    if not os.path.exists(diagrams_dir):
+        raise HTTPException(status_code=404, detail=f"Diagram '{diagram_type}' not found (directory missing)")
 
-    if os.path.commonpath([diagrams_dir, diagram_path]) != diagrams_dir:
-        raise HTTPException(status_code=403, detail="Unsafe diagram path")
-    
-    if not os.path.exists(diagram_path):
-        raise HTTPException(status_code=404, detail="Diagram not found")
+    from backend.tools.diagram_templates import normalize_diagram_identifier
+    from backend.tools.diagram_adapter import adapt_to_react_flow
+    from backend.tools.diagram_exporter import export_diagram_to_mermaid
+
+    norm = normalize_diagram_identifier(diagram_type)
+    if not norm:
+        raise HTTPException(status_code=404, detail=f"Diagram '{diagram_type}' not found")
+
+    candidate_names = []
+    candidate_names.append(norm["filename"])
+    candidate_names.append(f"{norm['id']}.json")
+    for alias in norm["aliases"]:
+        candidate_names.append(f"{alias}.json")
+    candidate_names.append(f"{slugify(diagram_type)}.json")
+    candidate_names.append(f"{diagram_type}.json")
+
+    chosen_path = None
+    for cand in candidate_names:
+        p = os.path.abspath(os.path.join(diagrams_dir, cand))
+        if os.path.commonpath([diagrams_dir, p]) != diagrams_dir:
+            raise HTTPException(status_code=403, detail="Unsafe diagram path")
+        if os.path.exists(p):
+            chosen_path = p
+            break
+
+    if not chosen_path:
+        raise HTTPException(status_code=404, detail=f"Diagram '{diagram_type}' not found")
         
-    with open(diagram_path, "r", encoding="utf-8") as f:
-        return json.load(f)
+    with open(chosen_path, "r", encoding="utf-8") as f:
+        data = json.load(f)
+
+    data["canonical_id"] = norm["id"]
+    data["diagram_type"] = norm["label"]
+
+    # Ensure nodes and edges exist in response
+    adapted_nodes, adapted_edges = adapt_to_react_flow(data, norm["id"])
+    data["nodes"] = [n.model_dump() for n in adapted_nodes]
+    data["edges"] = [e.model_dump() for e in adapted_edges]
+
+    if "mermaid" not in data or not data["mermaid"]:
+        data["mermaid"] = export_diagram_to_mermaid(data)
+
+    return data
 
 @router.post("/{project_id}/diagrams/{diagram_type}/regenerate")
 def regenerate_diagram(project_id: str, diagram_type: str):
-    if project_id not in projects_db:
-        raise HTTPException(status_code=404, detail="Project not found")
-        
-    state = projects_db[project_id]
+    state = get_project_state(project_id)
     if not state.structured_requirements or not state.project_plan:
         raise HTTPException(status_code=400, detail="Cannot regenerate before planning is complete")
         
-    from backend.tools.artifact_pipeline import write_bytes_artifact, write_text_artifact
+    from backend.tools.diagram_templates import normalize_diagram_identifier
     from backend.tools.diagram_generator import generate_diagram_with_llm, render_diagram_png
+    from backend.tools.diagram_exporter import export_diagram_to_mermaid
+    from backend.tools.artifact_pipeline import write_bytes_artifact, write_text_artifact
+
+    norm = normalize_diagram_identifier(diagram_type)
+    if not norm:
+        raise HTTPException(status_code=400, detail=f"Invalid diagram identifier '{diagram_type}'")
+
     try:
-        res = generate_diagram_with_llm(diagram_type, state.structured_requirements, state.project_plan)
-        name = slugify(diagram_type)
-        source_path = f"design/diagram_source/{name}.json"
-        image_path = f"design/diagrams/{name}.png"
-        write_text_artifact(state, source_path, res.model_dump_json(indent=2), "DIAGRAM", "PlanningAgent", diagram_type=diagram_type)
-        write_bytes_artifact(state, image_path, render_diagram_png(res, f"{state.project_name} {diagram_type}"), "DIAGRAM", "PlanningAgent", diagram_type=diagram_type)
-        return {"status": "regenerated", "type": diagram_type, "source_path": source_path, "image_path": image_path}
+        label = norm["label"]
+        cid = norm["id"]
+        res = generate_diagram_with_llm(cid, state.structured_requirements, state.project_plan)
+
+        payload = res.model_dump()
+        payload["mermaid"] = export_diagram_to_mermaid(res)
+        payload["canonical_id"] = cid
+        payload["diagram_type"] = label
+        json_content = json.dumps(payload, indent=2)
+
+        # Write canonical JSON artifact
+        canonical_source_path = f"design/diagram_source/{norm['filename']}"
+        write_text_artifact(state, canonical_source_path, json_content, "DIAGRAM", "PlanningAgent", diagram_type=label, canonical_id=cid)
+
+        # Write alias JSON artifact
+        alias_source_path = f"design/diagram_source/{cid}.json"
+        if alias_source_path != canonical_source_path:
+            write_text_artifact(state, alias_source_path, json_content, "DIAGRAM", "PlanningAgent", diagram_type=label, canonical_id=cid)
+
+        # Render PNG visual artifact
+        png = render_diagram_png(res, f"{state.project_name} {label}")
+        canonical_image_path = f"design/diagrams/{norm['png_filename']}"
+        write_bytes_artifact(state, canonical_image_path, png, "DIAGRAM", "PlanningAgent", diagram_type=label, canonical_id=cid)
+
+        alias_image_path = f"design/diagrams/{cid}.png"
+        if alias_image_path != canonical_image_path:
+            write_bytes_artifact(state, alias_image_path, png, "DIAGRAM", "PlanningAgent", diagram_type=label, canonical_id=cid)
+
+        return {
+            "status": "regenerated",
+            "type": label,
+            "canonical_id": cid,
+            "source_path": canonical_source_path,
+            "image_path": canonical_image_path,
+        }
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail=f"Regeneration failed: {str(e)}")
+
+
+@router.post("/{project_id}/approve_enhancement")
+def approve_enhancement(project_id: str):
+    state = get_project_state(project_id)
+    state.enhancement_approved = True
+    state.approval_status = "approved"
+    if state.workflow_status == "waiting_for_approval":
+        state.workflow_status = "running"
+    save_project_state(state)
+    from backend.events import event_bus
+    event_bus.emit_sync("ENHANCEMENT_PLAN_APPROVED", {
+        "project_id": project_id,
+        "status": "approved",
+    })
+    return {"status": "approved", "project_id": project_id}
+
+
+@router.post("/{project_id}/reject_enhancement")
+def reject_enhancement(project_id: str, reason: Optional[str] = None):
+    state = get_project_state(project_id)
+    state.enhancement_approved = False
+    state.approval_status = "rejected"
+    state.workflow_status = "rejected"
+    save_project_state(state)
+    from backend.events import event_bus
+    event_bus.emit_sync("ENHANCEMENT_PLAN_REJECTED", {
+        "project_id": project_id,
+        "reason": reason or "User rejected the enhancement plan",
+    })
+    return {"status": "rejected", "project_id": project_id}
+
+
+@router.get("/{project_id}/understanding")
+def get_project_understanding(project_id: str):
+    state = get_project_state(project_id)
+    return {
+        "project_id": project_id,
+        "understanding": state.project_understanding,
+        "profile": state.repo_profile,
+    }
+
+
+@router.get("/{project_id}/enhancement_plan")
+def get_enhancement_plan(project_id: str):
+    state = get_project_state(project_id)
+    return {
+        "project_id": project_id,
+        "enhancement_plan": state.enhancement_plan,
+        "approved": state.enhancement_approved,
+        "approval_status": state.approval_status,
+    }
+
+
+@router.get("/{project_id}/diff")
+def get_enhancement_diff(project_id: str):
+    state = get_project_state(project_id)
+    return {
+        "project_id": project_id,
+        "diff": state.diff_summary or "",
+        "targeted_changes": state.targeted_changes or [],
+    }

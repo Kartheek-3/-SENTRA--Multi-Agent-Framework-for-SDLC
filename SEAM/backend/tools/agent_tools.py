@@ -16,6 +16,8 @@ class AgentToolContext:
 
     @property
     def project_root(self) -> str:
+        if getattr(self.state, "is_enhance_workflow", False) and getattr(self.state, "repo_workspace_path", None):
+            return os.path.abspath(self.state.repo_workspace_path)
         return os.path.abspath(os.path.join("generated_projects", self.state.project_name))
 
     def run(self, tool_name: str, payload: Dict[str, Any], approved: bool = False) -> ToolResult:

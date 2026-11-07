@@ -21,3 +21,6 @@ class DiagramJSON(BaseModel):
     diagram_type: str
     nodes: List[DiagramNode]
     edges: List[DiagramEdge]
+    generation_method: Optional[str] = "deterministic_extraction"
+    model_name: Optional[str] = None
+    provider: Optional[str] = None

@@ -55,6 +55,106 @@ class AnalysisAgent:
             })
             return state
 
+        # Workflow B: Enhance Existing Project branch
+        if state.is_enhance_workflow:
+            try:
+                from backend.github.workspace_service import SafeWorkspaceService
+                from backend.github.understanding_service import ProjectUnderstandingService
+                from backend.models.analysis import Requirement
+
+                if not state.repo_url:
+                    raise ValueError("Repository URL is required for Enhance Existing Project workflow.")
+
+                workspace_service = SafeWorkspaceService()
+                token = os.getenv("GITHUB_TOKEN")
+                prep_result = workspace_service.prepare_workspace(
+                    project_id=state.project_id,
+                    repo_url_or_slug=state.repo_url,
+                    branch=state.repo_branch or "main",
+                    token=token,
+                )
+
+                state.repo_workspace_path = prep_result["workspace_path"]
+                state.repo_owner = prep_result["owner"]
+                state.repo_name = prep_result["name"]
+                base_sha = prep_result["base_commit_sha"]
+
+                event_bus.emit_sync("REPOSITORY_CONNECTED", {
+                    "project_id": state.project_id,
+                    "repository": f"{state.repo_owner}/{state.repo_name}",
+                    "branch": state.repo_branch or "main",
+                    "commit_sha": base_sha,
+                    "workspace_path": state.repo_workspace_path,
+                })
+
+                # Perform evidence extraction & project understanding
+                understanding_service = ProjectUnderstandingService(state.repo_workspace_path)
+                profile, understanding = understanding_service.analyze(
+                    workspace_path=state.repo_workspace_path,
+                    owner=state.repo_owner,
+                    name=state.repo_name,
+                    branch=state.repo_branch or "main",
+                    commit_sha=base_sha,
+                )
+
+                state.repo_profile = profile.model_dump()
+                state.project_understanding = understanding.model_dump()
+
+                # Persist artifacts
+                project_dir = os.path.join("generated_projects", state.project_name)
+                understanding_service.write_artifacts(project_dir, profile, understanding)
+
+                event_bus.emit_sync("PROJECT_UNDERSTANDING_GENERATED", {
+                    "project_id": state.project_id,
+                    "repository": profile.repository,
+                    "detected_languages": profile.detected_languages,
+                    "api_routes_count": len(profile.api_routes),
+                    "summary": understanding.project_purpose,
+                })
+
+                # Synthesize structured requirements for downstream planning
+                state.structured_requirements = AnalysisResult(
+                    project_summary=understanding.project_purpose,
+                    application_domain=state.domain or "Software Enhancement",
+                    functional_requirements=[
+                        Requirement(id="FR-ENH-001", description=f"Enhance existing codebase: {state.user_requirement}")
+                    ],
+                    non_functional_requirements=[
+                        Requirement(id="NFR-ENH-001", description="Maintain backward compatibility and adhere to existing coding conventions")
+                    ],
+                    actors=["User", "Developer"],
+                    entities=[s["entity"] for s in profile.database_schemas] or ["Repository"],
+                    constraints=[
+                        "Confine modifications strictly to designated repository workspace",
+                        "Preserve existing dependency conventions and test suites",
+                    ],
+                    assumptions=[f"Operating on baseline commit {base_sha[:8]}"],
+                    risks=["Potential regression on untested legacy paths"],
+                    technical_considerations=profile.frameworks + profile.detected_languages,
+                    ambiguities=[],
+                    recommended_capabilities=["Targeted Enhancement", "Regression Testing"],
+                )
+
+                state.execution_history.append({
+                    "agent": agent_name,
+                    "status": "success",
+                    "workflow": "enhance_existing",
+                    "repository": profile.repository,
+                    "duration": time.time() - start_time,
+                })
+                return state
+
+            except Exception as e:
+                error_msg = f"AnalysisAgent Repository Enhancement Error: {str(e)}"
+                state.errors.append(error_msg)
+                state.execution_history.append({
+                    "agent": agent_name,
+                    "status": "error",
+                    "error": error_msg,
+                    "duration": time.time() - start_time,
+                })
+                return state
+
         prompt = ChatPromptTemplate.from_template(ANALYSIS_PROMPT)
         
         llm = get_model_compat(self.model_router, "analysis")

@@ -292,7 +292,7 @@ class GitReadOnlyTool(SEAMTool):
             raise ValueError("Read-only Git tools do not accept arbitrary extra arguments")
         cwd = _safe_git_worktree(context)
         started = time.perf_counter()
-        proc = subprocess.run(["git", *self.command, *tool_input.args], cwd=cwd, capture_output=True, text=True, timeout=self.timeout)
+        proc = subprocess.run(["git", *self.command, *tool_input.args], cwd=cwd, capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=self.timeout)
         return ToolResult(
             success=proc.returncode == 0,
             tool_name=self.name,
@@ -336,7 +336,7 @@ class GitCommandTool(SEAMTool):
         cwd = _safe_git_worktree(context)
         _reject_dangerous_git_args(args)
         started = time.perf_counter()
-        proc = subprocess.run(["git", *args], cwd=cwd, capture_output=True, text=True, timeout=self.timeout)
+        proc = subprocess.run(["git", *args], cwd=cwd, capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=self.timeout)
         return ToolResult(
             success=proc.returncode == 0,
             tool_name=self.name,
@@ -553,7 +553,7 @@ class PytestRunnerTool(SEAMTool):
             command.append(PermissionEngine(default_registry).ensure_safe_path(tool_input.test_path, cwd))
         command.extend(arg for arg in tool_input.test_args if not arg.startswith("-c"))
         started = time.perf_counter()
-        proc = subprocess.run(command, cwd=cwd, capture_output=True, text=True, timeout=self.timeout)
+        proc = subprocess.run(command, cwd=cwd, capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=self.timeout)
         return ToolResult(success=proc.returncode == 0, tool_name=self.name, stdout=proc.stdout, stderr=proc.stderr, duration_ms=int((time.perf_counter() - started) * 1000), structured_data={"exit_code": proc.returncode})
 
 
@@ -922,7 +922,7 @@ def _runtime_start(tool_name: str, root: str, profile: Dict[str, Any]) -> ToolRe
         if not command:
             continue
         _validate_runtime_command(command)
-        proc = subprocess.Popen(command, cwd=root, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, shell=False)
+        proc = subprocess.Popen(command, cwd=root, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, encoding="utf-8", errors="replace", shell=False)
         process_key = _process_key(root, name)
         _RUNTIME_PROCESSES[process_key] = proc
         port = profile.get(port_key)
@@ -1047,7 +1047,7 @@ class DockerBuildTool(SEAMTool):
     def execute(self, tool_input: DockerInput, context: ToolExecutionContext) -> ToolResult:
         cwd = context.project_root or os.getcwd()
         PermissionEngine(default_registry).ensure_safe_path(tool_input.dockerfile, cwd)
-        proc = subprocess.run(["docker", "build", "-f", tool_input.dockerfile, "-t", tool_input.image_tag, "."], cwd=cwd, capture_output=True, text=True, timeout=self.timeout)
+        proc = subprocess.run(["docker", "build", "-f", tool_input.dockerfile, "-t", tool_input.image_tag, "."], cwd=cwd, capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=self.timeout)
         return ToolResult(success=proc.returncode == 0, tool_name=self.name, stdout=proc.stdout, stderr=proc.stderr, structured_data={"exit_code": proc.returncode, "image_tag": tool_input.image_tag})
 
 

@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from backend.api import agent_manager, artifacts, event_store, experiments, filesystem, github, knowledge, n8n, performance, projects, rag, task_groups, workflow, ws
+from backend.api import agent_manager, artifacts, event_store, experiments, filesystem, github, images, knowledge, n8n, performance, projects, rag, task_groups, workflow, ws
 
 app = FastAPI(title="SEAM API")
 
@@ -28,6 +28,7 @@ app.include_router(rag.router)
 app.include_router(github.router)
 app.include_router(filesystem.router)
 app.include_router(n8n.router)
+app.include_router(images.router)
 
 @app.get("/")
 @app.get("/health")

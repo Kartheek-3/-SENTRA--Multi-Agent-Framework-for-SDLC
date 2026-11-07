@@ -102,3 +102,78 @@ class RepositoryRecord(BaseModel):
             "status": self.status,
             "last_analyzed_at": self.last_analyzed_at,
         }
+
+
+class DetailedRepositoryProfile(BaseModel):
+    repository: str
+    owner: str
+    name: str
+    branch: str = "main"
+    commit_sha: str = ""
+    tree_sha: Optional[str] = None
+    detected_languages: List[str] = Field(default_factory=list)
+    frameworks: List[str] = Field(default_factory=list)
+    package_managers: List[str] = Field(default_factory=list)
+    application_entry_points: List[str] = Field(default_factory=list)
+    directory_structure: List[str] = Field(default_factory=list)
+    frontend_architecture: Optional[str] = None
+    backend_architecture: Optional[str] = None
+    api_routes: List[Dict[str, Any]] = Field(default_factory=list)
+    database_technologies: List[str] = Field(default_factory=list)
+    database_schemas: List[Dict[str, Any]] = Field(default_factory=list)
+    tests: List[str] = Field(default_factory=list)
+    test_commands: List[str] = Field(default_factory=list)
+    deployment_configuration: List[str] = Field(default_factory=list)
+    docker_ci_cd: List[str] = Field(default_factory=list)
+    source_references: List[Dict[str, Any]] = Field(default_factory=list)
+    analysis_timestamp: str = Field(default_factory=utc_now)
+    freshness_status: str = "NOT_ANALYZED"  # CURRENT, STALE, CHANGED, NOT_ANALYZED, ERROR
+    confirmed_findings: List[str] = Field(default_factory=list)
+    inferred_findings: List[str] = Field(default_factory=list)
+    unavailable_info: List[str] = Field(default_factory=list)
+
+
+class ProjectUnderstanding(BaseModel):
+    project_purpose: str = "Unknown"
+    technology_stack: List[str] = Field(default_factory=list)
+    architecture_and_entry_points: str = ""
+    directory_structure: List[str] = Field(default_factory=list)
+    main_modules: List[Dict[str, Any]] = Field(default_factory=list)
+    api_surface: List[Dict[str, Any]] = Field(default_factory=list)
+    database_and_persistence: Dict[str, Any] = Field(default_factory=dict)
+    existing_tests: Dict[str, Any] = Field(default_factory=dict)
+    build_and_runtime_instructions: Dict[str, Any] = Field(default_factory=dict)
+    deployment_configuration: Dict[str, Any] = Field(default_factory=dict)
+    architectural_limitations: List[str] = Field(default_factory=list)
+    potential_defects: List[str] = Field(default_factory=list)
+    improvement_opportunities: List[str] = Field(default_factory=list)
+    uncertainties_requiring_input: List[str] = Field(default_factory=list)
+    source_references: List[Dict[str, Any]] = Field(default_factory=list)
+
+
+class EnhancementPlanItem(BaseModel):
+    item_id: str
+    title: str
+    current_behavior: str
+    proposed_improvement: str
+    why_needed: str
+    files_expected_to_change: List[str] = Field(default_factory=list)
+    dependencies: List[str] = Field(default_factory=list)
+    compatibility_risks: List[str] = Field(default_factory=list)
+    tests_required: List[str] = Field(default_factory=list)
+    verification_steps: List[str] = Field(default_factory=list)
+    rollback_considerations: str = ""
+    approved: bool = False
+
+
+class EnhancementPlan(BaseModel):
+    plan_id: str
+    repository: str
+    branch: str = "main"
+    base_commit_sha: str = ""
+    summary: str
+    items: List[EnhancementPlanItem] = Field(default_factory=list)
+    status: str = "pending_approval"  # pending_approval, approved, rejected, executing, completed
+    created_at: str = Field(default_factory=utc_now)
+    approved_at: Optional[str] = None
+    approved_by: Optional[str] = None

@@ -52,6 +52,7 @@ class ProjectState(BaseModel):
     project_plan: Optional[ProjectPlan] = None
     system_design: Optional[SystemDesign] = None
     design_artifacts: Optional[DesignArtifacts] = None
+    technology_stack: Optional[Dict[str, Any]] = Field(default_factory=dict)
     
     tasks: Dict[str, Task] = Field(default_factory=dict)
     completed_tasks: List[str] = Field(default_factory=list)
@@ -99,6 +100,26 @@ class ProjectState(BaseModel):
     latest_qa_status: str = "pending"
     scale_changed: bool = False
     
+    # Workflow Selection & Repository Enhancement (Phase 3)
+    workflow_type: str = "new_project"  # "new_project" or "enhance_existing"
+    repo_url: Optional[str] = None
+    repo_owner: Optional[str] = None
+    repo_name: Optional[str] = None
+    repo_branch: Optional[str] = "main"
+    repo_workspace_path: Optional[str] = None
+    repo_profile: Optional[Dict[str, Any]] = None
+    project_understanding: Optional[Dict[str, Any]] = None
+    enhancement_plan: Optional[Dict[str, Any]] = None
+    enhancement_approved: bool = False
+    approval_status: str = "pending"  # "pending", "approved", "rejected"
+    targeted_changes: List[Dict[str, Any]] = Field(default_factory=list)
+    diff_summary: Optional[str] = None
+    regression_status: str = "not_started"
+
+    @property
+    def is_enhance_workflow(self) -> bool:
+        return self.workflow_type == "enhance_existing"
+
     @property
     def project_name(self) -> str:
         from backend.utils import slugify

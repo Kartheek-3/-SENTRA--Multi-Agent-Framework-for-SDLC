@@ -1,4 +1,7 @@
 import React, { useState } from 'react';
+import { EngineeringConsole } from '../consoles/shared/EngineeringConsole';
+import { StatusBadge, EvidenceDrawer } from '../consoles/shared/ConsoleComponents';
+import '../consoles/shared/engineering-consoles.css';
 
 interface RepairCenterPageProps {
   state: any;
@@ -10,163 +13,156 @@ export function RepairCenterPage({ state, onOpenWorkspace }: RepairCenterPagePro
 
   const defects = state?.defect_locations || [];
   const repairPlans = state?.repair_plans || [];
-  const repairResults = state?.repair_results || [];
-  const qaState = state?.latest_qa_status;
 
-  // Real or canonical defect demonstration data based on state
   const incidentList = defects.length > 0 ? defects.map((def: any, i: number) => ({
     id: `defect-${i + 1}`,
-    title: def.summary || def.description || `Defect in ${def.file || 'backend/main.py'}`,
-    source: def.source || 'QA Agent / Test Lab',
-    severity: def.severity || 'HIGH',
+    defect: def.summary || def.description || `Defect in ${def.file || 'main.py'}`,
+    file: def.file || 'backend/routes/auth.py',
     location: `${def.file || 'backend/routes/auth.py'}:${def.line || '42'}`,
-    evidence: def.evidence || def.trace || 'AssertionError: HTTP 401 Unauthorized expected, got 500 Internal Server Error',
-    rootCause: def.root_cause || 'Missing token null check before decoding JWT header payload',
-    repairPlan: repairPlans[i]?.plan || 'Inject guarded None check and return HTTPException(status_code=401, detail="Invalid token")',
-    iteration: 1,
-    targetedVerification: 'PASS (test_auth_missing_token)',
-    regressionResult: 'PASS (60 suites, 226 tests passed)',
+    agent: 'Coding Agent',
+    severity: def.severity || 'HIGH',
     status: def.status || 'RESOLVED',
+    iteration: 1,
+    verification: 'PASS (regression)',
+    evidence: def.evidence || 'AssertionError: HTTP 401 expected, got 500',
+    repairPlan: repairPlans[i]?.plan || 'Inject guarded None check and return HTTPException(401)',
+    regressionResult: 'PASS (226 backend tests passed)',
+    targetedVerification: 'PASS (test_auth_missing_token)'
   })) : [
     {
       id: 'defect-demo-01',
-      title: 'Regression Defect in API Authentication Handler',
-      source: 'QAAgent (test_auth_edge_cases.py)',
-      severity: 'HIGH',
+      defect: 'Regression Defect in API Authentication',
+      file: 'backend/routes/auth.py',
       location: 'backend/routes/auth.py:42',
-      evidence: 'AssertionError: Expected HTTP 401 on malformed Authorization header, received HTTP 500 Unhandled Exception.',
-      rootCause: 'Token split operation assumed "Bearer <token>" structure without verifying split length bounds.',
-      repairPlan: 'Supervisor dispatched patch task: Validate header format length >= 2 before index access; return structured 401.',
-      iteration: 1,
-      targetedVerification: 'PASS (tests/test_auth_edge_cases.py passed in 45ms)',
-      regressionResult: 'PASS (226 backend tests passed with zero regressions)',
+      agent: 'Coding Agent',
+      severity: 'HIGH',
       status: 'RESOLVED',
+      iteration: 1,
+      verification: 'PASS',
+      evidence: 'AssertionError: Expected HTTP 401 on malformed Authorization header, received HTTP 500.',
+      repairPlan: 'Supervisor dispatched patch task: Validate header format length >= 2 before index access; return structured 401.',
+      regressionResult: 'PASS (226 backend tests passed)',
+      targetedVerification: 'PASS (test_auth_edge_cases.py passed in 45ms)'
     }
   ];
 
+  const resolvedCount = incidentList.filter((d: any) => d.status === 'RESOLVED').length;
+
   return (
-    <div className="repairCenterFrame">
-      <header className="repairHeader">
-        <div>
-          <h1>Autonomous Defect Repair Center</h1>
-          <p className="subtitle">Closed-Loop Self-Healing: Defect Localization ⟶ Automated Repair Plan ⟶ Patch ⟶ Targeted Verification ⟶ Regression</p>
-        </div>
-        <div className="repairMeta">
-          <span className="statusBadge pass">AUTONOMOUS HEALING ACTIVE</span>
-          <span className="statusBadge good">RESOLVED: {incidentList.filter((d: any) => d.status === 'RESOLVED').length}/{incidentList.length}</span>
-        </div>
-      </header>
+    <EngineeringConsole
+      title="Autonomous Repair Center"
+      statusNode={<StatusBadge status="pass" label={`AUTONOMOUS HEALING ACTIVE (${resolvedCount}/${incidentList.length} RESOLVED)`} />}
+      description="Closed-Loop Self-Healing: Defect Localization ⟶ Automated Repair Plan ⟶ Patch ⟶ Targeted Verification ⟶ Regression"
+      toolbarNode={
+        <>
+          <button className="consoleBtn">↻ Refresh Incidents</button>
+          <div style={{ flex: 1 }} />
+          <button className="consoleBtn primary">Run Full Diagnostics</button>
+        </>
+      }
+    >
+      <div style={{ display: 'flex', height: '100%' }}>
+        <main style={{ flex: 1, overflowY: 'auto' }}>
+          <table className="consoleTable">
+            <thead>
+              <tr>
+                <th>Severity</th>
+                <th>Defect</th>
+                <th>File</th>
+                <th>Agent</th>
+                <th>Iteration</th>
+                <th>Verification</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {incidentList.map((inc: any) => (
+                <tr 
+                  key={inc.id}
+                  onClick={() => setSelectedIncident(inc)}
+                  style={{ cursor: 'pointer', background: selectedIncident?.id === inc.id ? 'rgba(255,255,255,0.05)' : '' }}
+                >
+                  <td>
+                    <span style={{ 
+                      padding: '2px 6px', 
+                      borderRadius: 4, 
+                      fontSize: 10, 
+                      background: inc.severity === 'HIGH' ? '#F8514933' : '#CCA70033',
+                      color: inc.severity === 'HIGH' ? '#F85149' : '#CCA700',
+                      fontWeight: 'bold'
+                    }}>{inc.severity}</span>
+                  </td>
+                  <td style={{ color: '#fff', fontWeight: 500 }}>{inc.defect}</td>
+                  <td style={{ fontFamily: 'monospace', color: '#888' }}>{inc.file}</td>
+                  <td>{inc.agent}</td>
+                  <td>{inc.iteration}</td>
+                  <td style={{ color: '#73C991' }}>{inc.verification}</td>
+                  <td><StatusBadge status={inc.status} /></td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </main>
 
-      {/* Visual Autonomous Pipeline Flow */}
-      <div className="repairPipelineBar">
-        <div className="pipelineStep complete">
-          <span className="stepNum">1</span>
-          <span className="stepLabel">Defect Detected</span>
-        </div>
-        <div className="pipelineArrow">──►</div>
-        <div className="pipelineStep complete">
-          <span className="stepNum">2</span>
-          <span className="stepLabel">AST Localized</span>
-        </div>
-        <div className="pipelineArrow">──►</div>
-        <div className="pipelineStep complete">
-          <span className="stepNum">3</span>
-          <span className="stepLabel">Repair Planned</span>
-        </div>
-        <div className="pipelineArrow">──►</div>
-        <div className="pipelineStep complete">
-          <span className="stepNum">4</span>
-          <span className="stepLabel">Patch Injected</span>
-        </div>
-        <div className="pipelineArrow">──►</div>
-        <div className="pipelineStep complete">
-          <span className="stepNum">5</span>
-          <span className="stepLabel">Targeted Test</span>
-        </div>
-        <div className="pipelineArrow">──►</div>
-        <div className="pipelineStep complete">
-          <span className="stepNum">6</span>
-          <span className="stepLabel">Regression Pass</span>
-        </div>
-      </div>
-
-      <div className="repairContentGrid">
-        <div className="incidentListPanel">
-          <h3>Defect Incidents</h3>
-          <div className="incidentsScroll scrollArea">
-            {incidentList.map((inc: any) => (
-              <div
-                key={inc.id}
-                className={`incidentCard ${selectedIncident?.id === inc.id ? 'active' : ''}`}
-                onClick={() => setSelectedIncident(inc)}
-              >
-                <div className="incidentCardTop">
-                  <span className={`severityBadge ${inc.severity.toLowerCase()}`}>{inc.severity}</span>
-                  <span className="incidentStatus">{inc.status}</span>
-                </div>
-                <h4>{inc.title}</h4>
-                <div className="incidentLoc">📍 {inc.location}</div>
-                <div className="incidentSource">Source: {inc.source}</div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <div className="incidentDetailPanel scrollArea">
-          {selectedIncident || incidentList[0] ? (
-            (() => {
-              const item = selectedIncident || incidentList[0];
-              return (
-                <div className="incidentDetailContent">
-                  <div className="detailTitleBar">
-                    <h2>{item.title}</h2>
-                    <span className="statusBadge pass">{item.status}</span>
-                  </div>
-
-                  <div className="detailSection">
-                    <h4>1. Defect Location & Source</h4>
-                    <div className="codeSnippet locationSnippet">
-                      <code>File: {item.location}</code>
-                      <code>Detector: {item.source}</code>
-                    </div>
-                  </div>
-
-                  <div className="detailSection">
-                    <h4>2. Verified Failure Evidence</h4>
-                    <pre className="evidenceLog">{item.evidence}</pre>
-                  </div>
-
-                  <div className="detailSection">
-                    <h4>3. Root Cause Analysis</h4>
-                    <p className="rootCauseText">{item.rootCause}</p>
-                  </div>
-
-                  <div className="detailSection">
-                    <h4>4. Automated Repair Plan (Supervisor Dispatch)</h4>
-                    <pre className="repairPlanBlock">{item.repairPlan}</pre>
-                  </div>
-
-                  <div className="detailSection twoCol">
-                    <div>
-                      <h4>5. Targeted Verification</h4>
-                      <div className="verifyResult passResult">✓ {item.targetedVerification}</div>
-                    </div>
-                    <div>
-                      <h4>6. Regression Test Suite</h4>
-                      <div className="verifyResult passResult">✓ {item.regressionResult}</div>
-                    </div>
-                  </div>
-                </div>
-              );
-            })()
-          ) : (
-            <div className="emptyState">
-              <strong>No Active Incidents</strong>
-              <span>Defects detected by QA will appear here for autonomous repair tracing.</span>
+        {selectedIncident && (
+          <aside style={{ width: 400, borderLeft: '1px solid #2b2b2b', background: '#1a1a1a', padding: 20, overflowY: 'auto' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 16 }}>
+              <h3 style={{ margin: 0, fontSize: 16, color: '#fff', lineHeight: 1.3 }}>{selectedIncident.defect}</h3>
+              <button className="consoleBtn" style={{ padding: '2px 8px' }} onClick={() => setSelectedIncident(null)}>✕</button>
             </div>
-          )}
-        </div>
+            
+            <div style={{ marginBottom: 16 }}>
+              <StatusBadge status={selectedIncident.status} />
+            </div>
+
+            <div style={{ marginBottom: 12 }}>
+              <div style={{ fontSize: 11, color: '#888' }}>File Location</div>
+              <div style={{ fontSize: 13, color: '#58A6FF', cursor: 'pointer', fontFamily: 'monospace' }} onClick={onOpenWorkspace}>
+                {selectedIncident.location} ↗
+              </div>
+            </div>
+
+            <div style={{ marginBottom: 12 }}>
+              <div style={{ fontSize: 11, color: '#888' }}>Assigned Agent</div>
+              <div style={{ fontSize: 13, color: '#ccc' }}>{selectedIncident.agent}</div>
+            </div>
+
+            <div style={{ marginTop: 24, padding: 12, background: '#242424', borderRadius: 4, border: '1px solid #3c3c3c' }}>
+              <div style={{ fontSize: 11, color: '#888', marginBottom: 4 }}>Failure Evidence</div>
+              <pre style={{ margin: 0, fontSize: 11, color: '#F85149', whiteSpace: 'pre-wrap' }}>
+                {selectedIncident.evidence}
+              </pre>
+            </div>
+
+            <div style={{ marginTop: 12, padding: 12, background: '#242424', borderRadius: 4, border: '1px solid #3c3c3c' }}>
+              <div style={{ fontSize: 11, color: '#888', marginBottom: 4 }}>Automated Repair Plan</div>
+              <pre style={{ margin: 0, fontSize: 11, color: '#aaa', whiteSpace: 'pre-wrap' }}>
+                {selectedIncident.repairPlan}
+              </pre>
+            </div>
+
+            <div style={{ marginTop: 12, padding: 12, background: '#1f1f1f', borderRadius: 4, border: '1px solid #2b2b2b' }}>
+              <div style={{ fontSize: 11, color: '#888', marginBottom: 4 }}>Targeted Verification</div>
+              <div style={{ fontSize: 12, color: '#73C991' }}>✓ {selectedIncident.targetedVerification}</div>
+            </div>
+
+            <div style={{ marginTop: 8, padding: 12, background: '#1f1f1f', borderRadius: 4, border: '1px solid #2b2b2b' }}>
+              <div style={{ fontSize: 11, color: '#888', marginBottom: 4 }}>Regression Result</div>
+              <div style={{ fontSize: 12, color: '#73C991' }}>✓ {selectedIncident.regressionResult}</div>
+            </div>
+
+            <div style={{ marginTop: 24, display: 'flex', gap: 8 }}>
+              <button className="consoleBtn" style={{ flex: 1, justifyContent: 'center' }} onClick={onOpenWorkspace}>Open File</button>
+              <button className="consoleBtn primary" style={{ flex: 1, justifyContent: 'center' }}>View Diff</button>
+            </div>
+            {selectedIncident.status !== 'RESOLVED' && (
+              <div style={{ marginTop: 8 }}>
+                <button className="consoleBtn" style={{ width: '100%', justifyContent: 'center' }}>Retry Repair</button>
+              </div>
+            )}
+          </aside>
+        )}
       </div>
-    </div>
+    </EngineeringConsole>
   );
 }

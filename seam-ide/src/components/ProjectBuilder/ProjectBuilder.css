@@ -1,0 +1,830 @@
+/* ProjectBuilder.css — Professional AI Project Builder Styling */
+
+.projectBuilderContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 32px 24px 64px;
+  color: #c9d1d9;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+/* Hero Header */
+.builderHero {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border-bottom: 1px solid #30363d;
+  padding-bottom: 20px;
+}
+
+.builderBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  width: fit-content;
+  padding: 3px 10px;
+  background: rgba(56, 139, 253, 0.15);
+  border: 1px solid rgba(56, 139, 253, 0.35);
+  border-radius: 12px;
+  color: #58a6ff;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.builderHero h1 {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 700;
+  color: #f0f6fc;
+  letter-spacing: -0.5px;
+}
+
+.builderHero p {
+  margin: 0;
+  font-size: 15px;
+  color: #8b949e;
+  line-height: 1.5;
+}
+
+/* Workflow Mode Tabs */
+.workflowTabs {
+  display: flex;
+  gap: 12px;
+  background: #161b22;
+  padding: 4px;
+  border-radius: 8px;
+  border: 1px solid #30363d;
+  width: fit-content;
+}
+
+.workflowTab {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: transparent;
+  border: none;
+  border-radius: 6px;
+  color: #8b949e;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.workflowTab:hover {
+  color: #f0f6fc;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.workflowTab.active {
+  background: #21262d;
+  color: #58a6ff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  border: 1px solid #388bfd40;
+}
+
+/* Main Builder Layout: Form + Supporting Sidebar */
+.builderGrid {
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: 24px;
+  align-items: start;
+}
+
+@media (max-width: 960px) {
+  .builderGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.builderMainColumn {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.builderCard {
+  background: #161b22;
+  border: 1px solid #30363d;
+  border-radius: 8px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.cardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.cardHeader h2 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #f0f6fc;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.cardHeader .stepNumber {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #238636;
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+/* Prompt Input */
+.promptTextareaContainer {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.promptTextarea {
+  width: 100%;
+  min-height: 140px;
+  background: #0d1117;
+  border: 1px solid #30363d;
+  border-radius: 6px;
+  padding: 14px 16px;
+  color: #f0f6fc;
+  font-size: 14px;
+  line-height: 1.6;
+  resize: vertical;
+  box-sizing: border-box;
+  font-family: inherit;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.promptTextarea:focus {
+  outline: none;
+  border-color: #58a6ff;
+  box-shadow: 0 0 0 3px rgba(88, 166, 255, 0.2);
+}
+
+.promptFooter {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+  color: #8b949e;
+}
+
+.promptCharCount.limit {
+  color: #f85149;
+}
+
+/* Inspirations / Example Chips */
+.examplesSection {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.examplesSection label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #8b949e;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.exampleChips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.exampleChip {
+  padding: 6px 12px;
+  background: #21262d;
+  border: 1px solid #30363d;
+  border-radius: 6px;
+  color: #c9d1d9;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.exampleChip:hover {
+  background: #30363d;
+  color: #f0f6fc;
+  border-color: #8b949e;
+}
+
+/* Stack Presets Grid */
+.presetsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
+}
+
+.presetCard {
+  background: #0d1117;
+  border: 1px solid #30363d;
+  border-radius: 6px;
+  padding: 14px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  text-align: left;
+}
+
+.presetCard:hover {
+  border-color: #8b949e;
+  background: #161b22;
+}
+
+.presetCard.selected {
+  border-color: #58a6ff;
+  background: rgba(56, 139, 253, 0.08);
+  box-shadow: 0 0 0 1px #58a6ff;
+}
+
+.presetTitle {
+  font-size: 14px;
+  font-weight: 600;
+  color: #f0f6fc;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.presetCheck {
+  color: #58a6ff;
+  font-size: 14px;
+}
+
+.presetDesc {
+  font-size: 12px;
+  color: #8b949e;
+  line-height: 1.4;
+  margin: 0;
+}
+
+.presetTags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 4px;
+}
+
+.presetTag {
+  font-size: 10px;
+  padding: 2px 6px;
+  background: #21262d;
+  border-radius: 4px;
+  color: #58a6ff;
+  font-weight: 500;
+}
+
+/* Custom Stack Controls */
+.customStackToggle {
+  background: transparent;
+  border: none;
+  color: #58a6ff;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: fit-content;
+}
+
+.customStackToggle:hover {
+  text-decoration: underline;
+}
+
+.customStackCategories {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  background: #0d1117;
+  border: 1px solid #30363d;
+  border-radius: 6px;
+  padding: 16px;
+}
+
+.stackCategoryGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.stackCategoryGroup label {
+  font-size: 11px;
+  font-weight: 600;
+  color: #8b949e;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.stackSelect {
+  background: #161b22;
+  border: 1px solid #30363d;
+  border-radius: 6px;
+  color: #f0f6fc;
+  padding: 8px 10px;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.stackSelect:focus {
+  outline: none;
+  border-color: #58a6ff;
+}
+
+/* Active Stack Summary Chips */
+.activeStackBar {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background: rgba(56, 139, 253, 0.05);
+  border: 1px solid rgba(56, 139, 253, 0.2);
+  border-radius: 6px;
+  padding: 12px 14px;
+}
+
+.activeStackHeader {
+  font-size: 12px;
+  font-weight: 600;
+  color: #58a6ff;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.activeChipsList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.stackChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: #21262d;
+  border: 1px solid #388bfd40;
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  color: #f0f6fc;
+  font-weight: 500;
+}
+
+.stackChip strong {
+  color: #8b949e;
+  font-weight: 400;
+}
+
+/* Advanced Configuration Accordion */
+.advancedSection {
+  border-top: 1px solid #21262d;
+  padding-top: 12px;
+}
+
+.advancedToggle {
+  background: transparent;
+  border: none;
+  color: #8b949e;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0;
+}
+
+.advancedToggle:hover {
+  color: #f0f6fc;
+}
+
+.advancedFields {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-top: 14px;
+}
+
+@media (max-width: 600px) {
+  .advancedFields {
+    grid-template-columns: 1fr;
+  }
+}
+
+.fieldGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.fieldGroup label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #8b949e;
+}
+
+.fieldInput {
+  background: #0d1117;
+  border: 1px solid #30363d;
+  border-radius: 6px;
+  padding: 8px 12px;
+  color: #f0f6fc;
+  font-size: 13px;
+  font-family: inherit;
+}
+
+.fieldInput:focus {
+  outline: none;
+  border-color: #58a6ff;
+}
+
+/* Generate Project Action Button */
+.actionRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding-top: 8px;
+}
+
+.generateButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background: #238636;
+  border: 1px solid rgba(240, 246, 252, 0.1);
+  border-radius: 6px;
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: 600;
+  padding: 12px 28px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.generateButton:hover:not(:disabled) {
+  background: #2ea043;
+  transform: translateY(-1px);
+}
+
+.generateButton:disabled {
+  background: #21262d;
+  color: #484f58;
+  cursor: not-allowed;
+  border-color: #30363d;
+}
+
+.validationAlert {
+  font-size: 13px;
+  color: #f85149;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Sidebar / Supporting Area */
+.builderSidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.sidebarCard {
+  background: #161b22;
+  border: 1px solid #30363d;
+  border-radius: 8px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.sidebarCard h3 {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: #f0f6fc;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.agentChainList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.agentChainItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 12px;
+}
+
+.agentStepDot {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #21262d;
+  border: 1px solid #30363d;
+  color: #8b949e;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: 700;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.agentChainItem.active .agentStepDot {
+  background: #1f6feb;
+  color: #ffffff;
+  border-color: #58a6ff;
+}
+
+.agentChainItem.completed .agentStepDot {
+  background: #238636;
+  color: #ffffff;
+  border-color: #2ea043;
+}
+
+.agentChainInfo {
+  display: flex;
+  flex-direction: column;
+}
+
+.agentChainName {
+  font-weight: 600;
+  color: #f0f6fc;
+}
+
+.agentChainDesc {
+  color: #8b949e;
+  font-size: 11px;
+}
+
+.recentProjectItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 10px;
+  background: #0d1117;
+  border: 1px solid #30363d;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.recentProjectItem:hover {
+  border-color: #58a6ff;
+  background: #161b22;
+}
+
+.recentProjectName {
+  font-size: 13px;
+  font-weight: 600;
+  color: #f0f6fc;
+}
+
+.statusPill {
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 10px;
+  text-transform: uppercase;
+}
+
+.statusPill.completed {
+  background: rgba(46, 160, 67, 0.15);
+  color: #3fb950;
+  border: 1px solid rgba(46, 160, 67, 0.3);
+}
+
+.statusPill.running {
+  background: rgba(56, 139, 253, 0.15);
+  color: #58a6ff;
+  border: 1px solid rgba(56, 139, 253, 0.3);
+}
+
+.statusPill.pending {
+  background: rgba(210, 153, 34, 0.15);
+  color: #d29922;
+  border: 1px solid rgba(210, 153, 34, 0.3);
+}
+
+/* Generation Progress Overlay / View */
+.generationProgressCard {
+  background: #161b22;
+  border: 1px solid #388bfd60;
+  border-radius: 8px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+}
+
+.progressHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.progressTitle {
+  font-size: 18px;
+  font-weight: 700;
+  color: #f0f6fc;
+}
+
+.progressBarTrack {
+  width: 100%;
+  height: 8px;
+  background: #21262d;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.progressBarFill {
+  height: 100%;
+  background: linear-gradient(90deg, #1f6feb, #2ea043);
+  transition: width 0.3s ease;
+}
+
+.agentTimelineGrid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 8px;
+}
+
+@media (max-width: 800px) {
+  .agentTimelineGrid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.timelineAgentBox {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 10px 6px;
+  background: #0d1117;
+  border: 1px solid #30363d;
+  border-radius: 6px;
+  font-size: 11px;
+  text-align: center;
+  gap: 4px;
+}
+
+.timelineAgentBox.active {
+  border-color: #58a6ff;
+  background: rgba(56, 139, 253, 0.1);
+  box-shadow: 0 0 10px rgba(88, 166, 255, 0.2);
+}
+
+.timelineAgentBox.done {
+  border-color: #2ea043;
+  color: #3fb950;
+}
+
+/* Post-Generation Completion Workspace */
+.completionWorkspace {
+  background: #161b22;
+  border: 1px solid #2ea043;
+  border-radius: 8px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.completionBanner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.completionSuccess {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.successIcon {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #238636;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+}
+
+.completionActions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.primaryActionButton {
+  background: #1f6feb;
+  border: 1px solid rgba(240, 246, 252, 0.1);
+  border-radius: 6px;
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 8px 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.15s ease;
+}
+
+.primaryActionButton:hover {
+  background: #388bfd;
+}
+
+.secondaryActionButton {
+  background: #21262d;
+  border: 1px solid #30363d;
+  border-radius: 6px;
+  color: #c9d1d9;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 8px 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.15s ease;
+}
+
+.secondaryActionButton:hover {
+  background: #30363d;
+  color: #f0f6fc;
+}
+
+/* GitHub Brownfield Workspace */
+.githubBanner {
+  background: rgba(210, 153, 34, 0.1);
+  border: 1px solid rgba(210, 153, 34, 0.3);
+  border-radius: 6px;
+  padding: 12px 16px;
+  font-size: 13px;
+  color: #e3b341;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  line-height: 1.5;
+}
+
+.repoInspectorResults {
+  background: #0d1117;
+  border: 1px solid #30363d;
+  border-radius: 6px;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 13px;
+}
+
+.repoMetaGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 8px;
+}

@@ -106,6 +106,14 @@ class CodingAgent:
                     state.failed_tasks.append(task_id)
                 return state
 
+        # 1b. Approval Gate Enforcement for Enhance Existing Project workflow
+        if state.is_enhance_workflow and not state.enhancement_approved:
+            self._log_error(state, agent_name, f"Enhancement plan not approved for task {task_id}. Modifications blocked.", start_time)
+            task.status = "failed"
+            if task_id not in state.failed_tasks:
+                state.failed_tasks.append(task_id)
+            return state
+
         # 2. Extract Context
         reqs = "\n".join(task.related_requirements) if task.related_requirements else "None explicitly assigned."
         sys_design = state.project_plan.system_design.model_dump_json(indent=2) if (state.project_plan and state.project_plan.system_design) else "{}"
@@ -231,8 +239,19 @@ class CodingAgent:
                 state.failed_tasks.append(task_id)
             return state
 
+        # Approval Gate Enforcement for Enhance Existing Project workflow
+        if state.is_enhance_workflow and not state.enhancement_approved:
+            self._log_error(state, agent_name, f"Enhancement plan not approved for task {task_id}. Modifications blocked.", start_time)
+            task.status = "failed"
+            if task_id not in state.failed_tasks:
+                state.failed_tasks.append(task_id)
+            return state
+
         # Safe File Writing with Collision Protection
-        project_dir = os.path.join("generated_projects", state.project_name)
+        if state.is_enhance_workflow and state.repo_workspace_path:
+            project_dir = state.repo_workspace_path
+        else:
+            project_dir = os.path.join("generated_projects", state.project_name)
         
         try:
             from backend.tools.agent_tools import run_agent_tool
@@ -323,6 +342,33 @@ class CodingAgent:
             if task_id not in state.failed_tasks:
                 state.failed_tasks.append(task_id)
             return state
+        if state.is_enhance_workflow:
+            try:
+                from backend.github.workspace_service import SafeWorkspaceService
+                ws_service = SafeWorkspaceService()
+                real_diff = ws_service.get_diff(project_dir)
+                changed_files = ws_service.get_changed_files(project_dir)
+                state.targeted_changes = changed_files
+                state.diff_summary = real_diff
+
+                gen_dir = os.path.join("generated_projects", state.project_name)
+                os.makedirs(gen_dir, exist_ok=True)
+                diff_patch_path = os.path.join(gen_dir, "enhancement_diff.patch")
+                diff_md_path = os.path.join(gen_dir, "enhancement_diff.md")
+                with open(diff_patch_path, "w", encoding="utf-8") as f:
+                    f.write(real_diff)
+                with open(diff_md_path, "w", encoding="utf-8") as f:
+                    f.write(f"# Targeted Enhancement Changes\n\n```diff\n{real_diff}\n```\n")
+
+                event_bus.emit_sync("TARGETED_CODE_ENHANCEMENT_COMPLETED", {
+                    "project_id": state.project_id,
+                    "task_id": task_id,
+                    "changed_files_count": len(changed_files),
+                    "diff_length": len(real_diff),
+                })
+            except Exception as diff_err:
+                state.errors.append(f"Diff capture error for {task_id}: {diff_err}")
+
         try:
             run_agent_tool(state, agent_name, "git_status", {}, task_id=task_id)
             diff_result = run_agent_tool(state, agent_name, "git_diff", {}, task_id=task_id)
@@ -331,6 +377,7 @@ class CodingAgent:
         except Exception as exc:
             state.errors.append(f"Git inspection tool warning for {task_id}: {exc}")
             diff_result = None
+
         self._record_repair_result(state, task_id, result_obj, diff_result)
         self._run_frontend_coding_checks(state, task_id, project_dir)
 

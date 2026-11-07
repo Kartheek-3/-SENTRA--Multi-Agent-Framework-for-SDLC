@@ -3228,3 +3228,1385 @@ pre {
 }
 
 
+
+/* ==========================================================================
+   FIGMA SEAM VS CODE IDE DESKTOP SHELL STYLING
+   Source: SEAM-UI (Node 3:2027 Visual Studio Code & 3:2826 Antigravity overlay)
+   ========================================================================== */
+
+/* Main Fullscreen IDE Container */
+.vscodeAppShell {
+  display: flex;
+  flex-direction: column;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  background-color: var(--figma-bg-surface);
+  color: var(--seam-text-primary);
+  font-family: var(--seam-font-sans);
+  user-select: none;
+}
+
+/* Center Horizontal Area */
+.vscodeMainWorkspace {
+  display: flex;
+  flex: 1;
+  width: 100%;
+  height: calc(100vh - 60px); /* 38px TitleBar + 22px StatusBar */
+  overflow: hidden;
+  position: relative;
+}
+
+/* 1. Activity Bar (48px wide) */
+.activityBar {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 48px;
+  min-width: 48px;
+  height: 100%;
+  background-color: var(--figma-bg-canvas);
+  border-right: 1px solid var(--figma-border);
+  z-index: 50;
+}
+
+.activityBarTop,
+.activityBarBottom {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+.activityBarItem {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  background: transparent;
+  border: none;
+  color: var(--seam-text-muted);
+  cursor: pointer;
+  transition: color 120ms ease;
+  padding: 0;
+}
+
+.activityBarItem:hover {
+  color: var(--seam-text-primary);
+}
+
+.activityBarItem.active {
+  color: #ffffff;
+}
+
+.activityActiveIndicator {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 2px;
+  height: 100%;
+  background-color: var(--figma-accent);
+}
+
+.activityBadge {
+  position: absolute;
+  top: 8px;
+  right: 6px;
+  background: var(--figma-accent);
+  color: #fff;
+  font-size: 9px;
+  font-weight: 700;
+  padding: 1px 4px;
+  border-radius: 999px;
+  line-height: 1;
+}
+
+.activityBadge.warning {
+  background: var(--figma-warning);
+  color: #111;
+}
+
+.activityUserAvatar {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #388bfd;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.activityBarModulesContainer {
+  position: relative;
+  width: 100%;
+}
+
+.activityModulesMenu {
+  position: absolute;
+  left: 48px;
+  top: -40px;
+  width: 240px;
+  background: var(--figma-bg-elevated);
+  border: 1px solid var(--figma-border);
+  border-radius: 6px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.55);
+  padding: 6px 0;
+  z-index: 1000;
+}
+
+.modulesMenuHeader {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--seam-text-muted);
+  padding: 6px 12px;
+  letter-spacing: 0.5px;
+}
+
+.modulesMenuItem {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 6px 12px;
+  background: transparent;
+  border: none;
+  color: var(--seam-text-primary);
+  font-size: 12px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.modulesMenuItem:hover {
+  background: var(--figma-accent);
+  color: #fff;
+}
+
+.modulesMenuIcon {
+  font-size: 14px;
+}
+
+/* 2. Primary Side Bar / Explorer (248px wide) */
+.vscodeSidebarWrapper {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background-color: var(--figma-bg-canvas);
+  border-right: 1px solid var(--figma-border);
+  overflow: hidden;
+  z-index: 40;
+}
+
+.explorerPanel {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.explorerHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 35px;
+  min-height: 35px;
+  padding: 0 12px 0 16px;
+  background: var(--figma-bg-canvas);
+  border-bottom: 1px solid var(--figma-border);
+}
+
+.explorerHeadingText {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  color: var(--seam-text-secondary);
+}
+
+.explorerHeaderActions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.explorerActionBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  background: transparent;
+  border: none;
+  border-radius: 3px;
+  color: var(--seam-text-muted);
+  cursor: pointer;
+}
+
+.explorerActionBtn:hover {
+  background: var(--figma-bg-hover);
+  color: var(--seam-text-primary);
+}
+
+.explorerScrollArea {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.explorerSection {
+  border-bottom: 1px solid var(--figma-border);
+}
+
+.explorerSectionHeader {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 26px;
+  padding: 0 8px;
+  background: var(--figma-bg-canvas);
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--seam-text-secondary);
+  cursor: pointer;
+  user-select: none;
+}
+
+.explorerSectionHeader:hover {
+  color: var(--seam-text-primary);
+}
+
+.sectionChevron {
+  font-size: 9px;
+  color: var(--seam-text-muted);
+  transition: transform 120ms ease;
+  width: 12px;
+  text-align: center;
+}
+
+.sectionChevron.open {
+  transform: rotate(90deg);
+}
+
+.sectionTitle {
+  flex: 1;
+  font-size: 11px;
+  letter-spacing: 0.5px;
+}
+
+.sectionTitle.projectTitle {
+  color: var(--seam-text-primary);
+}
+
+.sectionCount {
+  font-size: 10px;
+  background: var(--figma-bg-elevated);
+  padding: 1px 5px;
+  border-radius: 999px;
+  color: var(--seam-text-muted);
+}
+
+.openEditorsList {
+  display: flex;
+  flex-direction: column;
+  padding: 2px 0;
+}
+
+.openEditorRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 24px;
+  padding: 0 12px 0 24px;
+  font-size: 12px;
+  color: var(--seam-text-secondary);
+  cursor: pointer;
+}
+
+.openEditorRow:hover {
+  background: var(--figma-bg-hover);
+  color: var(--seam-text-primary);
+}
+
+.openEditorRow.active {
+  background: var(--figma-bg-elevated);
+  color: #ffffff;
+}
+
+.editorIconSpan {
+  font-size: 11px;
+}
+
+.openEditorName {
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dirtyDot {
+  color: var(--figma-git-branch);
+  font-size: 10px;
+}
+
+.openEditorCloseBtn {
+  display: none;
+  background: transparent;
+  border: none;
+  color: var(--seam-text-muted);
+  font-size: 11px;
+  cursor: pointer;
+  padding: 0 4px;
+}
+
+.openEditorRow:hover .openEditorCloseBtn {
+  display: block;
+}
+
+.openEditorCloseBtn:hover {
+  color: #fff;
+}
+
+.emptySectionNote {
+  padding: 6px 24px;
+  font-size: 11px;
+  color: var(--seam-text-muted);
+  font-style: italic;
+}
+
+/* Project Tree Body */
+.projectTreeBody {
+  display: flex;
+  flex-direction: column;
+}
+
+.explorerFilterRow {
+  padding: 4px 8px;
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+
+.explorerFilterInput {
+  width: 100%;
+  height: 22px;
+  background: var(--figma-bg-surface);
+  border: 1px solid var(--figma-border);
+  border-radius: 3px;
+  padding: 0 6px;
+  color: var(--seam-text-primary);
+  font-size: 11px;
+  outline: none;
+}
+
+.explorerFilterInput:focus {
+  border-color: var(--figma-accent);
+}
+
+.clearFilterBtn {
+  position: absolute;
+  right: 12px;
+  background: transparent;
+  border: none;
+  color: var(--seam-text-muted);
+  font-size: 10px;
+  cursor: pointer;
+}
+
+.treeContent {
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 8px;
+}
+
+.explorerTreeNodeContainer {
+  display: flex;
+  flex-direction: column;
+}
+
+.explorerTreeNode {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 24px;
+  width: 100%;
+  background: transparent;
+  border: none;
+  color: var(--seam-text-secondary);
+  font-size: 12px;
+  text-align: left;
+  cursor: pointer;
+  position: relative;
+  padding-right: 8px;
+}
+
+.explorerTreeNode:hover {
+  background: var(--figma-bg-hover);
+  color: var(--seam-text-primary);
+}
+
+.explorerTreeNode.selected {
+  background: #04395e !important;
+  color: #ffffff !important;
+}
+
+.folderChevron {
+  font-size: 8px;
+  color: var(--seam-text-muted);
+  width: 10px;
+  text-align: center;
+  transition: transform 100ms ease;
+}
+
+.folderChevron.open {
+  transform: rotate(90deg);
+}
+
+.fileIndentSpacer {
+  width: 10px;
+}
+
+.folderIcon {
+  font-size: 12px;
+}
+
+.treeNodeLabel {
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.fileIcon {
+  font-size: 11px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.fileIcon.tsx { color: #61dafb; font-weight: 700; }
+.fileIcon.ts { color: #569cd6; font-weight: 700; font-size: 10px; }
+.fileIcon.json { color: #cbcb41; font-weight: 700; }
+.fileIcon.css { color: #42a5f5; font-weight: 700; }
+.fileIcon.python { color: #3572a5; }
+.fileIcon.markdown { color: #519aba; }
+
+.nodeHoverActions {
+  display: none;
+  align-items: center;
+  gap: 4px;
+}
+
+.explorerTreeNode:hover .nodeHoverActions {
+  display: flex;
+}
+
+.nodeHoverBtn {
+  background: transparent;
+  border: none;
+  color: var(--seam-text-muted);
+  font-size: 11px;
+  cursor: pointer;
+  padding: 1px 3px;
+  border-radius: 2px;
+}
+
+.nodeHoverBtn:hover {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.nodeHoverBtn.danger:hover {
+  color: var(--seam-danger-text);
+}
+
+.outlineBody,
+.timelineBody {
+  padding: 4px 12px 8px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.outlineSymbolRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  color: var(--seam-text-secondary);
+  padding: 2px 4px;
+}
+
+.symbolGlyph {
+  font-weight: 700;
+  font-size: 11px;
+}
+
+.symbolGlyph.function { color: #dcdcaa; font-style: italic; }
+.symbolGlyph.type { color: #4ec9b0; }
+.symbolGlyph.render { color: #61dafb; }
+
+.timelineEventRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  color: var(--seam-text-secondary);
+  padding: 3px 0;
+}
+
+.timelineDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--figma-accent);
+}
+
+.timelineDot.past {
+  background: var(--seam-text-muted);
+}
+
+.timelineText {
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.timelineTime {
+  font-size: 10px;
+  color: var(--seam-text-muted);
+}
+
+/* 3. Workspace Center (Tabs + Breadcrumbs + Editor Canvas + Bottom Panel) */
+.vscodeCenterPane {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  height: 100%;
+  overflow: hidden;
+  background-color: var(--figma-bg-surface);
+  position: relative;
+}
+
+.editorWorkspaceView {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  overflow: hidden;
+}
+
+/* 3.1 Editor Tabs Bar */
+.editorTabsBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 35px;
+  min-height: 35px;
+  background-color: var(--figma-bg-canvas);
+  border-bottom: 1px solid var(--figma-border);
+  overflow: hidden;
+}
+
+.editorTabsScrollArea {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  height: 100%;
+  overflow-x: auto;
+}
+
+.editorTabItem {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 100%;
+  padding: 0 12px;
+  background: var(--figma-bg-canvas);
+  border-right: 1px solid var(--figma-border);
+  color: var(--seam-text-secondary);
+  font-size: 12px;
+  cursor: pointer;
+  white-space: nowrap;
+  user-select: none;
+}
+
+.editorTabItem:hover {
+  background: var(--figma-bg-hover);
+  color: var(--seam-text-primary);
+}
+
+.editorTabItem.active {
+  background: var(--figma-bg-surface);
+  color: #ffffff;
+}
+
+.activeTabBorderAccent {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: var(--figma-accent);
+}
+
+.tabFileDetails {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.tabIconSpan {
+  font-size: 12px;
+}
+
+.tabIconSpan.react { color: #61dafb; }
+.tabIconSpan.ts { color: #569cd6; font-size: 10px; font-weight: 700; }
+.tabIconSpan.json { color: #cbcb41; font-weight: 700; }
+.tabIconSpan.css { color: #42a5f5; }
+.tabIconSpan.python { color: #3572a5; }
+.tabIconSpan.md { color: #519aba; }
+
+.tabFileName {
+  font-size: 12px;
+}
+
+.tabDirtyDot {
+  font-size: 9px;
+  color: var(--figma-git-branch);
+}
+
+.tabCloseBtn {
+  background: transparent;
+  border: none;
+  color: var(--seam-text-muted);
+  font-size: 11px;
+  border-radius: 3px;
+  padding: 2px 4px;
+  cursor: pointer;
+  line-height: 1;
+}
+
+.tabCloseBtn:hover {
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
+}
+
+.editorTabsActions {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 0 8px;
+}
+
+.tabActionBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  background: transparent;
+  border: none;
+  border-radius: 3px;
+  color: var(--seam-text-muted);
+  cursor: pointer;
+}
+
+.tabActionBtn:hover {
+  background: var(--figma-bg-hover);
+  color: var(--seam-text-primary);
+}
+
+/* 3.2 Editor Canvas Container */
+.editorCanvasContainer {
+  display: flex;
+  flex: 1;
+  width: 100%;
+  overflow: hidden;
+  position: relative;
+  background-color: var(--figma-bg-surface);
+}
+
+.emptyWorkspaceNotice {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  color: var(--seam-text-muted);
+  text-align: center;
+  padding: 40px;
+}
+
+.emptyLogoGlyph {
+  font-size: 48px;
+  margin-bottom: 12px;
+  color: var(--figma-accent);
+}
+
+.emptyWorkspaceNotice h3 {
+  margin: 0 0 8px 0;
+  color: var(--seam-text-primary);
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.emptyWorkspaceNotice p {
+  margin: 0 0 20px 0;
+  font-size: 13px;
+  max-width: 420px;
+}
+
+.quickTipsRow {
+  display: flex;
+  gap: 16px;
+  font-size: 12px;
+}
+
+.quickTipsRow kbd {
+  background: var(--figma-bg-elevated);
+  border: 1px solid var(--figma-border);
+  border-radius: 3px;
+  padding: 2px 6px;
+  color: var(--seam-text-primary);
+}
+
+/* 3.3 Embedded Console View */
+.embeddedConsoleView {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  overflow: hidden;
+  background: var(--seam-bg);
+}
+
+.consoleViewNavBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 38px;
+  padding: 0 16px;
+  background: var(--figma-bg-canvas);
+  border-bottom: 1px solid var(--figma-border);
+}
+
+.backToEditorBtn {
+  background: var(--figma-bg-elevated);
+  border: 1px solid var(--figma-border);
+  color: var(--seam-text-primary);
+  padding: 4px 12px;
+  border-radius: 4px;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.backToEditorBtn:hover {
+  background: var(--figma-accent);
+  color: #fff;
+}
+
+.consoleTitleBadge {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  color: var(--figma-git-branch);
+}
+
+.consoleViewContent {
+  flex: 1;
+  overflow-y: auto;
+}
+
+/* 3.4 Integrated Terminal Panel Wrapper */
+.vscodeBottomPanelWrapper {
+  border-top: 1px solid var(--figma-border);
+  background: var(--figma-bg-surface);
+  overflow: hidden;
+  z-index: 30;
+}
+
+/* 4. SEAM Agent Panel (320px wide) */
+.vscodeAgentPanelWrapper {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background-color: var(--figma-bg-canvas);
+  border-left: 1px solid var(--figma-border);
+  overflow: hidden;
+  z-index: 40;
+}
+
+.seamAgentPanel {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.agentPanelHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 35px;
+  min-height: 35px;
+  padding: 0 12px;
+  background: var(--figma-bg-canvas);
+  border-bottom: 1px solid var(--figma-border);
+}
+
+.agentPanelHeaderTitle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  letter-spacing: 0.5px;
+  color: var(--seam-text-primary);
+}
+
+.agentPanelIcon {
+  font-size: 14px;
+}
+
+.wsPill {
+  font-size: 9px;
+  font-weight: 700;
+  padding: 1px 5px;
+  border-radius: 999px;
+}
+
+.wsPill.online {
+  background: rgba(115, 201, 145, 0.2);
+  color: var(--figma-success);
+}
+
+.wsPill.offline {
+  background: rgba(218, 54, 51, 0.2);
+  color: var(--seam-danger-text);
+}
+
+.agentHeaderActions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.agentHeaderTabBtn {
+  background: transparent;
+  border: none;
+  font-size: 11px;
+  color: var(--seam-text-muted);
+  cursor: pointer;
+  padding: 3px 6px;
+  border-radius: 3px;
+}
+
+.agentHeaderTabBtn.active {
+  background: var(--figma-bg-elevated);
+  color: #fff;
+  font-weight: 600;
+}
+
+.agentHeaderIconBtn {
+  background: transparent;
+  border: none;
+  color: var(--seam-text-muted);
+  font-size: 12px;
+  cursor: pointer;
+  padding: 2px 4px;
+  border-radius: 3px;
+}
+
+.agentHeaderIconBtn:hover {
+  color: #fff;
+  background: var(--figma-bg-hover);
+}
+
+.agentPanelBody {
+  flex: 1;
+  overflow-y: auto;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.agentCard {
+  background: var(--figma-bg-surface);
+  border: 1px solid var(--figma-border);
+  border-radius: 8px;
+  padding: 12px;
+}
+
+.identityCardHeader {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.agentAvatarBox {
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  background: rgba(0, 122, 204, 0.2);
+  border: 1px solid rgba(0, 122, 204, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+}
+
+.agentIdentityDetails {
+  display: flex;
+  flex-direction: column;
+}
+
+.agentRoleTitle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: #fff;
+}
+
+.agentStatePill {
+  font-size: 9px;
+  font-weight: 700;
+  padding: 1px 6px;
+  border-radius: 999px;
+}
+
+.agentStatePill.executing {
+  background: rgba(86, 156, 214, 0.2);
+  color: var(--figma-git-branch);
+}
+
+.agentStatePill.idle {
+  background: rgba(115, 201, 145, 0.15);
+  color: var(--figma-success);
+}
+
+.agentModelBadge {
+  font-size: 10px;
+  color: var(--seam-text-muted);
+}
+
+.agentControlsRow {
+  display: flex;
+  gap: 8px;
+}
+
+.agentActionBtn {
+  flex: 1;
+  padding: 6px 10px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 500;
+  cursor: pointer;
+  text-align: center;
+}
+
+.agentActionBtn.primary {
+  background: var(--figma-accent);
+  color: #fff;
+  border: 1px solid var(--figma-accent);
+}
+
+.agentActionBtn.primary:hover:not(:disabled) {
+  background: var(--figma-accent-hover);
+}
+
+.agentActionBtn.secondary {
+  background: var(--figma-bg-elevated);
+  color: var(--seam-text-primary);
+  border: 1px solid var(--figma-border);
+}
+
+.agentActionBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.cardHeaderRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.cardHeaderLabel {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.6px;
+  color: var(--seam-text-muted);
+}
+
+.progressPercentLabel {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--figma-git-branch);
+}
+
+.workflowProgressBarTrack {
+  width: 100%;
+  height: 4px;
+  background: var(--figma-border);
+  border-radius: 999px;
+  overflow: hidden;
+  margin-bottom: 10px;
+}
+
+.workflowProgressBarFill {
+  height: 100%;
+  background: var(--figma-accent);
+  transition: width 300ms ease;
+}
+
+.agentMetricsGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+}
+
+.agentMetricItem {
+  display: flex;
+  flex-direction: column;
+  background: var(--figma-bg-canvas);
+  padding: 6px 8px;
+  border-radius: 4px;
+  border: 1px solid var(--figma-border);
+}
+
+.metricLabel {
+  font-size: 9px;
+  color: var(--seam-text-muted);
+}
+
+.metricValue {
+  font-size: 11px;
+  font-weight: 600;
+  color: #fff;
+  margin-top: 2px;
+}
+
+.metricValue.pass { color: var(--figma-success); }
+.metricValue.warn { color: var(--figma-warning); }
+
+.domainTag {
+  font-size: 10px;
+  background: rgba(197, 134, 192, 0.2);
+  color: #c586c0;
+  padding: 1px 6px;
+  border-radius: 3px;
+}
+
+.contextDetailRows {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.contextDetailRow {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+}
+
+.contextLabel {
+  color: var(--seam-text-muted);
+}
+
+.contextValue {
+  color: var(--seam-text-primary);
+}
+
+.contextValue.highlight { color: #569cd6; }
+.contextValue.success { color: var(--figma-success); }
+
+.suggestionFindingItem {
+  background: var(--figma-bg-canvas);
+  border: 1px solid var(--figma-border);
+  border-radius: 6px;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.suggestionFindingItem.warning {
+  border-color: rgba(204, 167, 0, 0.4);
+}
+
+.findingTitle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  color: #fff;
+}
+
+.findingBody {
+  margin: 0;
+  font-size: 11px;
+  color: var(--seam-text-secondary);
+  line-height: 1.4;
+}
+
+.findingBody code {
+  background: var(--figma-bg-elevated);
+  padding: 1px 4px;
+  border-radius: 2px;
+  font-family: var(--seam-font-mono);
+  color: #dcdcaa;
+}
+
+.findingActionBtn {
+  align-self: flex-start;
+  background: var(--figma-accent);
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  padding: 4px 10px;
+  font-size: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 4px;
+}
+
+.findingActionBtn.secondary {
+  background: var(--figma-bg-elevated);
+  border: 1px solid var(--figma-border);
+  color: var(--seam-text-primary);
+}
+
+.agentChatList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.agentActivityRow {
+  background: var(--figma-bg-surface);
+  border: 1px solid var(--figma-border);
+  border-radius: 6px;
+  padding: 8px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.activityRowHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 10px;
+}
+
+.activitySender {
+  font-weight: 700;
+  color: var(--figma-git-branch);
+}
+
+.activityTime {
+  color: var(--seam-text-muted);
+}
+
+.activityStatusTag {
+  padding: 1px 5px;
+  border-radius: 2px;
+  font-size: 9px;
+  font-weight: 600;
+}
+
+.activityContent {
+  font-size: 11px;
+  line-height: 1.45;
+  color: var(--seam-text-secondary);
+}
+
+.agentPanelFooter {
+  padding: 8px 12px;
+  background: var(--figma-bg-canvas);
+  border-top: 1px solid var(--figma-border);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.quickSlashRow {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  overflow-x: auto;
+}
+
+.quickSlashBtn {
+  background: var(--figma-bg-elevated);
+  border: 1px solid var(--figma-border);
+  border-radius: 3px;
+  padding: 2px 6px;
+  color: #569cd6;
+  font-size: 10px;
+  font-family: var(--seam-font-mono);
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.quickSlashBtn:hover {
+  background: var(--figma-accent);
+  color: #fff;
+}
+
+.quickClearBtn {
+  background: transparent;
+  border: none;
+  color: var(--seam-text-muted);
+  font-size: 10px;
+  margin-left: auto;
+  cursor: pointer;
+}
+
+.agentComposerForm {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.agentCommandInput {
+  flex: 1;
+  height: 28px;
+  background: var(--figma-bg-surface);
+  border: 1px solid var(--figma-border);
+  border-radius: 4px;
+  padding: 0 8px;
+  color: #fff;
+  font-size: 11px;
+  outline: none;
+}
+
+.agentCommandInput:focus {
+  border-color: var(--figma-accent);
+}
+
+.agentSendBtn {
+  height: 28px;
+  padding: 0 12px;
+  background: var(--figma-accent);
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.agentSendBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* 5. Status Bar (22px high) */
+.statusBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 22px;
+  min-height: 22px;
+  background-color: var(--figma-bg-canvas);
+  border-top: 1px solid var(--figma-border);
+  padding: 0 8px 0 0;
+  font-size: 11px;
+  color: var(--seam-text-secondary);
+  user-select: none;
+  z-index: 60;
+}
+
+.statusBarLeft,
+.statusBarRight {
+  display: flex;
+  align-items: center;
+}
+
+.statusRemotePill {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 22px;
+  padding: 0 10px;
+  background: var(--figma-accent);
+  color: #ffffff;
+  border: none;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.statusBarBtn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  height: 22px;
+  padding: 0 8px;
+  background: transparent;
+  border: none;
+  color: var(--seam-text-secondary);
+  font-size: 11px;
+  cursor: pointer;
+}
+
+.statusBarBtn:hover {
+  background: var(--figma-bg-hover);
+  color: var(--seam-text-primary);
+}
+
+.branchName {
+  font-size: 11px;
+  color: var(--figma-git-branch);
+}
+
+.syncIcon.spinning {
+  animation: spin 1s infinite linear;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.problemsBtn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.errorIcon { color: var(--seam-danger-text); display: flex; align-items: center; }
+.warningIcon { color: var(--figma-warning); display: flex; align-items: center; }
+
+.errorCount, .warningCount {
+  font-size: 11px;
+  margin-right: 4px;
+}
+
+.statusBarItem {
+  padding: 0 8px;
+  font-size: 11px;
+  color: var(--seam-text-secondary);
+}
+
+.statusBarItem.language {
+  color: var(--seam-text-primary);
+}
+
+.statusBarItem.formatter {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--figma-success);
+}

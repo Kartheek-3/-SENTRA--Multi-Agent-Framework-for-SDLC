@@ -18,6 +18,13 @@ import { VSCodeMenuBar } from './components/VSCodeMenuBar';
 import { BreadcrumbBar } from './components/BreadcrumbBar';
 import { TerminalSessionSelector } from './components/TerminalSessionSelector';
 import { AntigravityHUD } from './components/AntigravityHUD';
+import { AppShell } from './layout/AppShell';
+import { LandingPage } from './landing/LandingPage';
+import { AuthProvider, useAuth } from './firebase/AuthContext';
+import { LoginPage } from './components/LoginPage';
+import { SignupPage } from './components/SignupPage';
+import { ProjectBuilder } from './components/ProjectBuilder/ProjectBuilder';
+import './layout/ideEnhancements.css';
 
 type Tab = {
   path: string;
@@ -159,6 +166,7 @@ export function App() {
   }, [log, projectId, refreshState, refreshTree]);
 
   const handleWorkflowEvent = useCallback(async (event: any) => {
+    setEvents(current => [event, ...current.slice(0, 199)]);
     const nextState = event.event === 'STATE_SYNC' && event.data ? event.data : await seamApi.projectStatus(event.project_id);
     setState(nextState);
     const translated = eventToChatMessages(event, nextState);
@@ -559,26 +567,56 @@ export function App() {
   const workspace = <FlexibleLayout panels={panels} topbar={topbar} />;
 
   return (
-    <ProductShell
-      projects={projects}
-      projectId={projectId}
-      state={state}
-      health={health}
-      n8nStatus={n8nStatus}
-      events={events}
-      experiments={experiments}
-      appError={appError}
-      workspace={workspace}
-      onOpenWorkspace={() => setProjectId(projectId || projects[0]?.project_id || null)}
-      onCreateProject={createProject}
-      onRun={runProject}
-      onRefresh={refreshAll}
-    />
+    <AuthProvider>
+      <ProductShell
+        projects={projects}
+        projectId={projectId}
+        onSelectProject={setProjectId}
+        state={state}
+        health={health}
+        n8nStatus={n8nStatus}
+        events={events}
+        experiments={experiments}
+        appError={appError}
+        tree={tree}
+        tabs={tabs}
+        activePath={activePath}
+        filter={filter}
+        onFilter={setFilter}
+        onOpen={openFile}
+        onCloseTab={closeTab}
+        onSelectTab={setActivePath}
+        onContentChange={updateActiveContent}
+        onSaveFile={saveActive}
+        onReloadFile={reloadActive}
+        onCreateFile={() => createEntry('file')}
+        onCreateFolder={() => createEntry('directory')}
+        onRename={renameEntry}
+        onDelete={deleteEntry}
+        logs={logs}
+        onClearLogs={() => setLogs([])}
+        wsStatus={wsStatus}
+        messages={messages}
+        onChatCommand={handleChatCommand}
+        onClearConversation={() => setMessages([])}
+        wordWrap={wordWrap}
+        onToggleWordWrap={() => setWordWrap(!wordWrap)}
+        workspace={workspace}
+        onOpenWorkspace={() => setProjectId(projectId || projects[0]?.project_id || null)}
+        onCreateProject={createProject}
+        onRun={runProject}
+        onStop={stopProject}
+        onRefresh={refreshAll}
+      />
+    </AuthProvider>
   );
 }
 
 type ProductPage =
   | 'home'
+  | 'login'
+  | 'signup'
+  | 'builder'
   | 'dashboard'
   | 'projects'
   | 'workspace'
@@ -601,19 +639,53 @@ type ProductPage =
 function ProductShell(props: {
   projects: ProjectSummary[];
   projectId: string | null;
+  onSelectProject: (id: string | null) => void;
   state: any;
   health: any;
   n8nStatus: any;
   events: any[];
   experiments: any;
   appError: string;
+  tree: FileNode[];
+  tabs: Tab[];
+  activePath: string;
+  filter: string;
+  onFilter: (value: string) => void;
+  onOpen: (path: string) => void;
+  onCloseTab: (path: string) => void;
+  onSelectTab: (path: string) => void;
+  onContentChange: (content: string) => void;
+  onSaveFile: () => Promise<void>;
+  onReloadFile: () => Promise<void>;
+  onCreateFile: () => void;
+  onCreateFolder: () => void;
+  onRename: () => void;
+  onDelete: () => void;
+  logs: string[];
+  onClearLogs: () => void;
+  wsStatus: string;
+  messages: ChatMessage[];
+  onChatCommand: (text: string) => Promise<void>;
+  onClearConversation: () => void;
+  wordWrap: boolean;
+  onToggleWordWrap: () => void;
   workspace: JSX.Element;
   onOpenWorkspace: () => void;
   onCreateProject: (input: any) => Promise<void>;
   onRun: () => Promise<void>;
+  onStop: () => Promise<void>;
   onRefresh: () => Promise<void>;
 }) {
-  const [page, setPage] = useState<ProductPage>('home');
+  const { currentUser, userProfile } = useAuth();
+  const [page, setPage] = useState<ProductPage>(() => {
+    const params = new URLSearchParams(window.location.search);
+    const p = params.get('page') as ProductPage | null;
+    if (p && ['home', 'login', 'signup', 'builder', 'dashboard', 'projects', 'workspace', 'design', 'testlab', 'contracts', 'repair', 'runtime', 'models', 'agents', 'artifacts', 'qa', 'delivery', 'evaluation', 'experiments', 'integrations', 'settings', 'readiness'].includes(p)) {
+      return p;
+    }
+    return 'home';
+  });
+  const [workspaceView, setWorkspaceView] = useState('editor');
   const [theme, setTheme] = useState<'dark' | 'light' | 'system'>('dark');
   const [commandPaletteOpen, setCommandPaletteOpen] = useState(false);
 
@@ -633,6 +705,10 @@ function ProductShell(props: {
   }, []);
 
   const commands: CommandItem[] = [
+    { id: 'open-builder', label: 'Create Project: Describe Application & Select Technology Stack', category: 'Project Builder', shortcut: 'Alt+N', action: () => setPage('builder') },
+    { id: 'open-landing', label: 'Go to SEAM Landing Page / Overview', category: 'Navigation', shortcut: 'Alt+H', action: () => setPage('home') },
+    { id: 'open-login', label: 'Account: Sign In to SEAM', category: 'Account', action: () => setPage('login') },
+    { id: 'open-signup', label: 'Account: Create New Account', category: 'Account', action: () => setPage('signup') },
     { id: 'open-ws', label: 'Open Workspace IDE', category: 'Navigation', shortcut: 'Alt+W', action: () => setPage('workspace') },
     { id: 'open-dash', label: 'Go to Dashboard', category: 'Navigation', shortcut: 'Alt+D', action: () => setPage('dashboard') },
     { id: 'open-design', label: 'Open Design Studio (10 Canonical Diagrams)', category: 'Design', shortcut: 'Alt+G', action: () => setPage('design') },
@@ -650,27 +726,117 @@ function ProductShell(props: {
   ];
 
   const nav: Array<[ProductPage, string]> = [
-    ['dashboard', 'Dashboard'],
-    ['projects', 'Projects'],
-    ['workspace', 'Workspace'],
-    ['design', 'Design Studio'],
-    ['testlab', 'Test Lab'],
-    ['contracts', 'Contracts'],
-    ['repair', 'Repair Center'],
-    ['runtime', 'Runtime'],
-    ['models', 'Model Router'],
-    ['agents', 'Agents'],
-    ['artifacts', 'Artifacts'],
-    ['delivery', 'Delivery'],
-    ['evaluation', 'Evaluation'],
-    ['experiments', 'Experiments'],
-    ['integrations', 'Integrations'],
-    ['readiness', 'Readiness & Health'],
-    ['settings', 'Settings'],
+    ['builder', '✨ Build Project'],
+    ['projects', '📁 Existing Projects'],
+    ['workspace', '💻 Code Editor & Files'],
+    ['dashboard', '📊 Overview Dashboard'],
+    ['design', '📐 Design Studio'],
+    ['testlab', '🧪 Test Lab & QA'],
+    ['repair', '🔧 Defect Repair'],
+    ['runtime', '⚡ Runtime Console'],
+    ['contracts', '📋 Contract Drift'],
+    ['delivery', '🚀 Delivery Center'],
+    ['models', '🧠 AI Model Router'],
+    ['evaluation', '📈 Evaluation & Benchmarks'],
+    ['settings', '⚙️ Settings & Readiness'],
   ];
 
   if (page === 'home') {
-    return <MarketingPage onStart={() => setPage('projects')} onWorkspace={() => setPage('workspace')} />;
+    return (
+      <LandingPage
+        onLaunch={() => setPage(currentUser ? 'builder' : 'login')}
+        onWorkspace={() => setPage(currentUser ? 'workspace' : 'login')}
+        onLogin={() => setPage('login')}
+        onArchitecture={() => {
+          setWorkspaceView('design');
+          setPage(currentUser ? 'workspace' : 'login');
+        }}
+      />
+    );
+  }
+
+  if (page === 'login') {
+    return (
+      <LoginPage
+        onSuccess={() => setPage('workspace')}
+        onNavigateSignup={() => setPage('signup')}
+        onBackToLanding={() => setPage('home')}
+      />
+    );
+  }
+
+  if (page === 'signup') {
+    return (
+      <SignupPage
+        onSuccess={() => setPage('workspace')}
+        onNavigateLogin={() => setPage('login')}
+        onBackToLanding={() => setPage('home')}
+      />
+    );
+  }
+
+  if (page === 'workspace') {
+    return (
+      <AppShell
+        projects={props.projects}
+        projectId={props.projectId}
+        onSelectProject={props.onSelectProject}
+        state={props.state}
+        health={props.health}
+        n8nStatus={props.n8nStatus}
+        events={props.events}
+        tree={props.tree}
+        tabs={props.tabs}
+        activePath={props.activePath}
+        filter={props.filter}
+        onFilter={props.onFilter}
+        onOpen={props.onOpen}
+        onCloseTab={props.onCloseTab}
+        onSelectTab={props.onSelectTab}
+        onContentChange={props.onContentChange}
+        onSaveFile={props.onSaveFile}
+        onReloadFile={props.onReloadFile}
+        onCreateFile={props.onCreateFile}
+        onCreateFolder={props.onCreateFolder}
+        onRename={props.onRename}
+        onDelete={props.onDelete}
+        onRefresh={props.onRefresh}
+        logs={props.logs}
+        onClearLogs={props.onClearLogs}
+        wsStatus={props.wsStatus}
+        messages={props.messages}
+        onRunWorkflow={props.onRun}
+        onStopWorkflow={props.onStop}
+        onChatCommand={props.onChatCommand}
+        onClearConversation={props.onClearConversation}
+        wordWrap={props.wordWrap}
+        onToggleWordWrap={props.onToggleWordWrap}
+        activeView={workspaceView}
+        onSelectView={setWorkspaceView}
+        renderPageView={view => {
+          if (view === 'dashboard') return <DashboardPage {...props} />;
+          if (view === 'design') return <DesignStudioPage projectId={props.projectId} state={props.state} onOpenWorkspace={() => setWorkspaceView('editor')} />;
+          if (view === 'testlab') return <TestLabPage state={props.state} />;
+          if (view === 'contracts') return <ContractsPage state={props.state} onOpenWorkspace={() => setWorkspaceView('editor')} />;
+          if (view === 'repair') return <RepairCenterPage state={props.state} onOpenWorkspace={() => setWorkspaceView('editor')} />;
+          if (view === 'runtime') return <RuntimeConsolePage health={props.health} state={props.state} />;
+          if (view === 'models') return <ModelControlPanel />;
+          if (view === 'agents') return <AgentsPage state={props.state} events={props.events} />;
+          if (view === 'artifacts') return <ArtifactsPage state={props.state} />;
+          if (view === 'qa') return <QaProductPage state={props.state} />;
+          if (view === 'delivery') return <DeliveryPage state={props.state} />;
+          if (view === 'evaluation') return <EvaluationPage state={props.state} events={props.events} />;
+          if (view === 'experiments') return <ExperimentsPage experiments={props.experiments} />;
+          if (view === 'integrations') return <IntegrationsPage health={props.health} n8nStatus={props.n8nStatus} />;
+          if (view === 'settings') return <SettingsPage health={props.health} n8nStatus={props.n8nStatus} />;
+          if (view === 'readiness') return <ReadinessPage health={props.health} n8nStatus={props.n8nStatus} />;
+          return null;
+        }}
+        onGoHome={() => setPage('home')}
+        userDisplayName={userProfile?.displayName || currentUser?.displayName || 'Kartheek Mudi'}
+        userEmail={userProfile?.email || currentUser?.email || 'engineer@seam.internal'}
+      />
+    );
   }
 
   return (
@@ -685,6 +851,9 @@ function ProductShell(props: {
         onToggleTerminal={() => {}}
         onToggleAgentPanel={() => {}}
         onToggleTheme={() => setTheme(prev => prev === 'dark' ? 'light' : 'dark')}
+        onGoHome={() => setPage('home')}
+        userDisplayName={userProfile?.displayName || currentUser?.displayName || 'Kartheek Mudi'}
+        userEmail={userProfile?.email || currentUser?.email || 'engineer@seam.internal'}
         activePath=""
       />
       <header className="productTopbar">
@@ -692,11 +861,40 @@ function ProductShell(props: {
           <strong>SEAM</strong>
           <span>Self-Evolving Autonomous Multi-Agent Framework</span>
         </button>
+        <button
+          className="topbarCreateBtn"
+          onClick={() => setPage('builder')}
+          style={{
+            background: 'linear-gradient(135deg, #2563eb, #7c3aed)',
+            color: '#fff',
+            fontWeight: 600,
+            border: 'none',
+            borderRadius: '6px',
+            padding: '6px 14px',
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '6px',
+            cursor: 'pointer',
+            fontSize: '13px',
+            boxShadow: '0 2px 8px rgba(37,99,235,0.3)',
+          }}
+        >
+          <span style={{ fontSize: '15px' }}>+</span> Build Project
+        </button>
         <select aria-label="Workspace selector">
           <option>SEAM Workspace</option>
           <option>SEAM Desktop</option>
         </select>
-        <select aria-label="Project selector" value={props.projectId || ''} onChange={() => undefined}>
+        <select
+          aria-label="Project selector"
+          value={props.projectId || ''}
+          onChange={e => {
+            if (e.target.value) {
+              props.onSelectProject(e.target.value);
+              setPage('workspace');
+            }
+          }}
+        >
           <option value="">Select project</option>
           {props.projects.map(project => <option key={project.project_id} value={project.project_id}>{project.project_name || project.project_id}</option>)}
         </select>
@@ -725,11 +923,24 @@ function ProductShell(props: {
         ))}
       </aside>
 
-      <main className={page === 'workspace' ? 'workspaceRoute' : 'productMain scrollArea'}>
+      <main className="productMain scrollArea">
         {props.appError && <ErrorBanner message={props.appError} />}
+        {(page === 'builder' || page === 'projects') && (
+          <ProjectBuilder
+            projects={props.projects}
+            currentProjectId={props.projectId}
+            onSelectProject={id => {
+              props.onSelectProject(id);
+              setPage('workspace');
+            }}
+            onOpenWorkspace={() => setPage('workspace')}
+            onOpenDesignStudio={() => setPage('design')}
+            onOpenTestLab={() => setPage('testlab')}
+            onOpenDelivery={() => setPage('delivery')}
+            onRefreshProjects={props.onRefresh}
+          />
+        )}
         {page === 'dashboard' && <DashboardPage {...props} />}
-        {page === 'projects' && <ProjectsPage projects={props.projects} onCreateProject={props.onCreateProject} onOpenWorkspace={() => setPage('workspace')} />}
-        {page === 'workspace' && props.workspace}
         {page === 'design' && <DesignStudioPage projectId={props.projectId} state={props.state} onOpenWorkspace={() => setPage('workspace')} />}
         {page === 'testlab' && <TestLabPage state={props.state} />}
         {page === 'contracts' && <ContractsPage state={props.state} onOpenWorkspace={() => setPage('workspace')} />}
@@ -836,7 +1047,7 @@ function MarketingPage({ onStart, onWorkspace }: { onStart: () => void; onWorksp
       <section className="contentBand">
         <h2>Product Screens</h2>
         <div className="screenshotGrid">
-          {['Dashboard', 'Workspace', 'Agent execution', 'QA', 'Delivery', 'Evaluation'].map(item => <div className="screenMock" key={item}>{item}</div>)}
+          {['Dashboard', 'Workspace', 'Agent execution', 'QA', 'Delivery', 'Evaluation'].map(item => <div className="screenDemo" key={item}>{item}</div>)}
         </div>
       </section>
       <section className="finalCta">
@@ -867,45 +1078,6 @@ function DashboardPage(props: { projects: ProjectSummary[]; state: any; health: 
           ['GitHub', props.health.github || 'UNKNOWN'],
           ['n8n', props.n8nStatus?.reachable ? 'CONNECTED' : props.n8nStatus?.configured ? 'DISCONNECTED' : 'NOT_CONFIGURED'],
         ]} />
-      </div>
-    </PageFrame>
-  );
-}
-
-function ProjectsPage({ projects, onCreateProject, onOpenWorkspace }: { projects: ProjectSummary[]; onCreateProject: (input: any) => Promise<void>; onOpenWorkspace: () => void }) {
-  const [form, setForm] = useState({ project_name: '', requirement: '', domain: 'General', technology_preferences: '' });
-  const [busy, setBusy] = useState(false);
-  const submit = async () => {
-    setBusy(true);
-    try {
-      await onCreateProject({
-        project_name: form.project_name,
-        requirement: `${form.requirement}\n\nDomain: ${form.domain}`,
-        scale: 'AUTO',
-        technology_preferences: form.technology_preferences.split(',').map(item => item.trim()).filter(Boolean),
-      });
-      onOpenWorkspace();
-    } finally {
-      setBusy(false);
-    }
-  };
-  return (
-    <PageFrame title="Projects" subtitle="Create a project, describe requirements, then watch SEAM work.">
-      <section className="projectWizard">
-        <label>Project Name<input value={form.project_name} onChange={event => setForm({ ...form, project_name: event.target.value })} /></label>
-        <label>Requirements<textarea value={form.requirement} onChange={event => setForm({ ...form, requirement: event.target.value })} placeholder="Build a travel application where users can search destinations, compare transport options, save trips and manage bookings." /></label>
-        <label>Domain<select value={form.domain} onChange={event => setForm({ ...form, domain: event.target.value })}>{['General', 'E-commerce', 'Healthcare', 'Finance', 'Travel', 'Custom'].map(item => <option key={item}>{item}</option>)}</select></label>
-        <label>Technology Preferences<input value={form.technology_preferences} onChange={event => setForm({ ...form, technology_preferences: event.target.value })} placeholder="FastAPI, React, SQLite" /></label>
-        <button onClick={submit} disabled={busy || !form.project_name || !form.requirement}>{busy ? 'Creating...' : 'Create Project'}</button>
-      </section>
-      <div className="productGrid two">
-        {projects.length ? projects.map(project => (
-          <article className="productCard" key={project.project_id}>
-            <span>{project.workflow_status || 'pending'}</span>
-            <h3>{project.project_name || project.project_id}</h3>
-            <p>{project.domain || 'General'}</p>
-          </article>
-        )) : <EmptyState title="No projects" detail="Create your first project." />}
       </div>
     </PageFrame>
   );

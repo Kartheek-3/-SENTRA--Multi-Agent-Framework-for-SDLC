@@ -204,6 +204,131 @@ class PlanningAgent:
             })
             return state
 
+        # Workflow B: Enhance Existing Project branch
+        if state.is_enhance_workflow:
+            try:
+                from backend.github.enhancement_planner import EnhancementPlanningService
+                from backend.github.intelligence_models import DetailedRepositoryProfile, ProjectUnderstanding
+                from backend.models.planning import (
+                    ArchitectureComponent,
+                    DatabaseEntity,
+                    APIEndpoint,
+                    ProjectPlan,
+                    SystemDesign,
+                    Task,
+                )
+
+                profile_dict = state.repo_profile or {}
+                understanding_dict = state.project_understanding or {}
+                profile = DetailedRepositoryProfile.model_validate(profile_dict) if profile_dict else DetailedRepositoryProfile(repository=state.project_id, owner="local", name="repo")
+                understanding = ProjectUnderstanding.model_validate(understanding_dict) if understanding_dict else ProjectUnderstanding()
+
+                planner = EnhancementPlanningService()
+                enhancement_plan = planner.create_plan(
+                    project_id=state.project_id,
+                    user_requirement=state.user_requirement,
+                    profile=profile,
+                    understanding=understanding,
+                )
+
+                state.enhancement_plan = enhancement_plan.model_dump()
+                project_dir = os.path.join("generated_projects", state.project_name)
+                planner.write_artifacts(project_dir, enhancement_plan)
+
+                event_bus.emit_sync("ENHANCEMENT_PLAN_GENERATED", {
+                    "project_id": state.project_id,
+                    "plan_id": enhancement_plan.plan_id,
+                    "repository": enhancement_plan.repository,
+                    "item_count": len(enhancement_plan.items),
+                    "summary": enhancement_plan.summary,
+                })
+
+                # Build grounded SystemDesign from repository profile
+                components = [
+                    ArchitectureComponent(
+                        component_id=f"comp-{idx}",
+                        name=os.path.basename(ep),
+                        responsibility=f"Entry point / module at {ep}",
+                        technologies=profile.frameworks or profile.detected_languages or ["Python"],
+                    )
+                    for idx, ep in enumerate(profile.application_entry_points or ["CoreModule"], start=1)
+                ]
+                db_entities = [
+                    DatabaseEntity(
+                        name=s["entity"],
+                        fields=["id", "created_at"],
+                        relationships=[],
+                    )
+                    for s in profile.database_schemas
+                ]
+                apis = [
+                    APIEndpoint(
+                        method=r["method"],
+                        path=r["path"],
+                        purpose=f"Endpoint defined in {r.get('file', '')}",
+                    )
+                    for r in profile.api_routes
+                ]
+
+                sys_design = SystemDesign(
+                    architecture_style=profile.backend_architecture or "Modular Service",
+                    components=components,
+                    database_schema=db_entities,
+                    api_endpoints=apis,
+                    technology_stack=profile.detected_languages + profile.frameworks,
+                    security_considerations=["Preserve existing authentication and permission checks"],
+                )
+                state.system_design = sys_design
+
+                # Synthesize tasks from enhancement plan items
+                tasks = []
+                for item in enhancement_plan.items:
+                    t = Task(
+                        task_id=f"TASK-{item.item_id}",
+                        title=item.title,
+                        description=(
+                            f"{item.proposed_improvement}\n"
+                            f"Target files: {', '.join(item.files_expected_to_change)}.\n"
+                            f"Why needed: {item.why_needed}"
+                        ),
+                        capability="Targeted Enhancement",
+                        priority="high",
+                        dependencies=[],
+                        related_requirements=["FR-ENH-001"],
+                    )
+                    tasks.append(t)
+                    state.tasks[t.task_id] = t
+
+                state.project_plan = ProjectPlan(
+                    project_overview=enhancement_plan.summary,
+                    implementation_phases=["1. Review Enhancement Plan", "2. Targeted Code Modification", "3. Regression Testing"],
+                    tasks=tasks,
+                    milestones=["Enhancement Plan Approved", "Targeted Changes Applied", "Regression QA Passed"],
+                    system_design=sys_design,
+                    implementation_strategy="Targeted non-destructive patch application to isolated repository workspace",
+                    risks_and_mitigations=item.compatibility_risks if enhancement_plan.items else [],
+                )
+
+                state.execution_history.append({
+                    "agent": agent_name,
+                    "status": "success",
+                    "workflow": "enhance_existing",
+                    "plan_id": enhancement_plan.plan_id,
+                    "duration": time.time() - start_time,
+                })
+                return state
+
+            except Exception as e:
+                error_msg = f"PlanningAgent Enhancement Error: {str(e)}"
+                state.errors.append(error_msg)
+                state.execution_history.append({
+                    "agent": agent_name,
+                    "status": "error",
+                    "error": error_msg,
+                    "duration": time.time() - start_time,
+                })
+                return state
+
         llm = get_model_compat(self.model_router, "planning")
         requirements_json = state.structured_requirements.model_dump_json(indent=2)
         format_instructions = self.parser.get_format_instructions()
@@ -346,6 +471,12 @@ class PlanningAgent:
         # Update state with valid plan
         state.project_plan = plan
         state.system_design = plan.system_design
+        if getattr(state, "technology_stack", None) and state.system_design:
+            for k, v in state.technology_stack.items():
+                if v and v != "None":
+                    entry = f"{k}: {v}"
+                    if entry not in state.system_design.technology_stack:
+                        state.system_design.technology_stack.append(entry)
         if capability_enabled(state, "domain_rag"):
             domain_service.persist_traceability(state, agent_name, f"Planning used domain context for {plan.system_design.architecture_style}.")
         
